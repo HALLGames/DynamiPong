@@ -37,9 +37,10 @@ Open Unity Hub, click "Add", then select the folder "DynamiPong/DynamiPong".
 
 ### Creating a new level
 - Create a new branch for your level
-- Duplicate the scene "Level1" (in Assets/Scenes) and rename it with your level name.
-- Duplicate the folder Level1 in Assets/Scripts for your scripts and rename it with your level name.
-- Relink all scripts in your project to the new scripts.
+- Duplicate the scene "Level1" (in Assets/Scenes) and rename it with your level name (Duplicate Shortcut: ctrl-d).
+- Duplicate the folder Level1 in Assets/Scripts for your scripts and rename it with your level name (Duplicate Shortcut: ctrl-d).
+  - In all of the new scripts, change to namespace to your level name.
+  - Relink all scripts in your project to the new scripts.
 - Any new Sprites, Materials, Resources, Prefabs, etc. should be put in a new folder with your level name under the respective folder in Assets.
   - ex. Sprites for a level called "Level2" should be put in the folder Assets/Sprites/Level2
   - If you want to have slightly altered common assets, copy them to the new folder.
