@@ -1,6 +1,9 @@
 # DynamiPong
 Multiplayer Pong, with some twists...
 
+##
+- [Level Ideas](https://github.com/HALLGames/DynamiPong/blob/master/LevelIdeas.md)
+
 ## Documentation
 - [Best Practices](http://www.glenstevens.ca/unity3d-best-practices/)
 
