@@ -998,8 +998,8 @@ MonoBehaviour:
     RegisteredScenes:
     - Connection
     - Lobby
+    - TemplateLevel
     - Level1
-    - Level2
     AllowRuntimeSceneChanges: 0
     NetworkedPrefabs:
     - Prefab: {fileID: 2747698423415181518, guid: df0b6d982a524f742b1b5da7505b57c5,
@@ -1008,16 +1008,16 @@ MonoBehaviour:
     - Prefab: {fileID: 2727865309872537701, guid: f29e49497c47dad44a98bc927c7e701b,
         type: 3}
       PlayerPrefab: 0
-    - Prefab: {fileID: 2747698423415181518, guid: 38721efa4242d6b409bd2820738a0395,
-        type: 3}
-      PlayerPrefab: 0
-    - Prefab: {fileID: 2727865309872537701, guid: 1a3c5dcc90ce6984c8062a32323dc9bd,
-        type: 3}
-      PlayerPrefab: 0
     - Prefab: {fileID: 2747698423415181518, guid: 2e1336d7a33f61f408eee34235bf3ad9,
         type: 3}
       PlayerPrefab: 0
     - Prefab: {fileID: 2727865309872537701, guid: 210b4f2c9eb4eb248bc6571d97fe224d,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 2747698423415181518, guid: 38721efa4242d6b409bd2820738a0395,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 2727865309872537701, guid: 1a3c5dcc90ce6984c8062a32323dc9bd,
         type: 3}
       PlayerPrefab: 0
     PlayerPrefabHash:

@@ -20,7 +20,7 @@ public class BallBehaviour : NetworkedBehaviour
         body = GetComponent<Rigidbody2D>();
 
         // Move
-        body.velocity = new Vector2(1, 1);
+        body.velocity = Vector2.one.normalized * speed;
     }
 
     /// <summary>
