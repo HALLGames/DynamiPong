@@ -1,24 +1,27 @@
 ﻿using UnityEngine;
 
-public class Goal : MonoBehaviour
+namespace Level1
 {
-    private bool onLeft;
-    private GameManager manager;
-
-    // Start is called before the first frame update
-    void Start()
+    public class Goal : MonoBehaviour
     {
-        manager = FindObjectOfType<GameManager>();
-        onLeft = transform.position.x < 0;
-        GetComponent<SpriteRenderer>().color = onLeft ? Color.green : Color.red;
-    }
+        private bool onLeft;
+        private GameManager manager;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if(collision.tag == "Ball")
+        // Start is called before the first frame update
+        void Start()
         {
-            // Hit by ball
-            manager.scoreGoal(onLeft);
+            manager = FindObjectOfType<GameManager>();
+            onLeft = transform.position.x < 0;
+            GetComponent<SpriteRenderer>().color = onLeft ? Color.green : Color.red;
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (collision.tag == "Ball")
+            {
+                // Hit by ball
+                manager.scoreGoal(onLeft);
+            }
         }
     }
 }

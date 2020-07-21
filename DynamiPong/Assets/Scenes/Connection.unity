@@ -999,6 +999,7 @@ MonoBehaviour:
     - Connection
     - Lobby
     - Level1
+    - Level2
     AllowRuntimeSceneChanges: 0
     NetworkedPrefabs:
     - Prefab: {fileID: 2747698423415181518, guid: df0b6d982a524f742b1b5da7505b57c5,
