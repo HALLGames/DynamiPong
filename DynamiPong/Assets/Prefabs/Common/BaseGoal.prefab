@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1609582645459590524}
   - component: {fileID: 2787848706254799396}
   - component: {fileID: 773964131203640080}
-  - component: {fileID: 8120484309554083300}
+  - component: {fileID: 1405549123530515601}
   m_Layer: 0
   m_Name: Goal
   m_TagString: Goal
@@ -109,7 +109,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &8120484309554083300
+--- !u!114 &1405549123530515601
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,6 +118,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 162101287045747657}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28dc7d33d7809bc44bd04005100dff00, type: 3}
+  m_Script: {fileID: 11500000, guid: d322279526d4cf84bb715e1b8cee9eac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

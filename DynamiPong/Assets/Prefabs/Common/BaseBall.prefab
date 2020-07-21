@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2747698423415181519}
   - component: {fileID: 5495689469949913889}
   - component: {fileID: 3681773117516938912}
-  - component: {fileID: 6152605716119960291}
+  - component: {fileID: 2278132676098444224}
   m_Layer: 0
   m_Name: Ball
   m_TagString: Ball
@@ -139,7 +139,7 @@ MonoBehaviour:
   PrefabHashGenerator: Ball
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
---- !u!114 &6152605716119960291
+--- !u!114 &2278132676098444224
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2747698423415181518}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d2c394744e09ca4a8005da11d27ec53, type: 3}
+  m_Script: {fileID: 11500000, guid: 39775c7383b9953429e30853860e7e29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
