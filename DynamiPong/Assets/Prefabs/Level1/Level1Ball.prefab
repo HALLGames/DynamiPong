@@ -135,8 +135,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NetworkedInstanceId: 0
-  PrefabHash: 1226112138290912118
-  PrefabHashGenerator: Ball
+  PrefabHash: 5766546048630552953
+  PrefabHashGenerator: Level1Ball
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
 --- !u!114 &-5773457766197552502

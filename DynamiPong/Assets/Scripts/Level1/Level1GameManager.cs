@@ -19,9 +19,6 @@ public class Level1GameManager : GameManagerBehaviour
         ballPrefab = Network.GetPrefab<Level1Ball>("Level1Ball");
         paddlePrefab = Network.GetPrefab<Level1Paddle>("Level1Paddle");
     }
-
-
-
 }
 
 
