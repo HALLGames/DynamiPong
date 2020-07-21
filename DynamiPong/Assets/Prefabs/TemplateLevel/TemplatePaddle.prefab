@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1095443439967355382}
   - component: {fileID: 1334765076595529604}
   - component: {fileID: 8669531964701308270}
-  - component: {fileID: -660698155807246724}
+  - component: {fileID: 2985819047673773647}
   m_Layer: 0
   m_Name: Level1Paddle
   m_TagString: Paddle
@@ -145,11 +145,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NetworkedInstanceId: 0
-  PrefabHash: 4816559609543875830
-  PrefabHashGenerator: Level1Paddle
+  PrefabHash: 10878854428495819759
+  PrefabHashGenerator: TemplatePaddle
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
---- !u!114 &-660698155807246724
+--- !u!114 &2985819047673773647
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2727865309872537701}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b35b4bb51e6eed419ccd3d781651f11, type: 3}
+  m_Script: {fileID: 11500000, guid: e90042d2500969f49b2295e75a9bc840, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10

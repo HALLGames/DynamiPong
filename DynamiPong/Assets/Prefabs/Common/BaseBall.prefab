@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3681773117516938912}
   - component: {fileID: 2278132676098444224}
   m_Layer: 0
-  m_Name: Ball
+  m_Name: BaseBall
   m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -135,8 +135,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NetworkedInstanceId: 0
-  PrefabHash: 1226112138290912118
-  PrefabHashGenerator: Ball
+  PrefabHash: 16882777989803610337
+  PrefabHashGenerator: BaseBall
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
 --- !u!114 &2278132676098444224

@@ -25,6 +25,24 @@ public class GameManagerBehaviour : NetworkedBehaviour
     protected BallBehaviour ball;
 
     /// <summary>
+    /// Does NOT get called by Unity
+    /// Call this method with base.Start() in the method "new void Start()"
+    /// </summary>
+    protected void Start()
+    {
+
+    }
+
+    /// <summary>
+    /// Does NOT get called by Unity
+    /// Call this method with base.Update() in the method "new void Update()"
+    /// </summary>
+    protected void Update()
+    {
+
+    }
+
+    /// <summary>
     /// Does NOT get called by Unity.
     /// Call this this method with base.NetworkStart() in "public override void NetworkStart()" 
     /// </summary>

@@ -17,15 +17,19 @@ public class PaddleBehaviour : NetworkedBehaviour
     protected bool isBot = false;
     protected Level1Ball botBall = null;
 
-    // Does NOT get called by Unity
-    // Call this method with base.Start() in the method "new void Start()"
+    /// <summary>
+    /// Does NOT get called by Unity
+    /// Call this method with base.Start() in the method "new void Start()"
+    /// </summary>
     protected void Start()
     {
         body = GetComponent<Rigidbody2D>();
     }
 
-    // Does NOT get called by Unity
-    // Call this method with base.Update() in the method "new void Update()"
+    /// <summary>
+    /// Does NOT get called by Unity
+    /// Call this method with base.Update() in the method "new void Update()"
+    /// </summary>
     protected void Update()
     {
         if (isBot)

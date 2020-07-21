@@ -6,7 +6,6 @@ public class Level1Goal : GoalBehaviour
     new void Start()
     {
         base.Start();
-        manager = FindObjectOfType<Level1GameManager>();
 
         // Color the goal based on side
         GetComponent<SpriteRenderer>().color = onLeft ? Color.green : Color.red;

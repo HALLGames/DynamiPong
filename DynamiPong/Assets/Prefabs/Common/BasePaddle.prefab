@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8669531964701308270}
   - component: {fileID: 7698037835487735722}
   m_Layer: 0
-  m_Name: Paddle
+  m_Name: BasePaddle
   m_TagString: Paddle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -145,8 +145,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NetworkedInstanceId: 0
-  PrefabHash: 14990970926230503832
-  PrefabHashGenerator: Square
+  PrefabHash: 9346282719755507694
+  PrefabHashGenerator: BasePaddle
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
 --- !u!114 &7698037835487735722
