@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 1095443439967355382}
   - component: {fileID: 1334765076595529604}
   - component: {fileID: 8669531964701308270}
-  - component: {fileID: 2774424221878706562}
+  - component: {fileID: -660698155807246724}
   m_Layer: 0
-  m_Name: Paddle
+  m_Name: Level1Paddle
   m_TagString: Paddle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,7 +149,7 @@ MonoBehaviour:
   PrefabHashGenerator: Square
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
---- !u!114 &2774424221878706562
+--- !u!114 &-660698155807246724
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,4 +162,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  isBot: 0
