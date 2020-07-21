@@ -2,6 +2,7 @@
 Multiplayer Pong, with some twists...
 
 ## Documentation
+- [Best Practices](http://www.glenstevens.ca/unity3d-best-practices/)
 TBD
 
 ## Development Environment
@@ -41,6 +42,7 @@ Open Unity Hub, click "Add", then select the folder "DynamiPong/DynamiPong".
 - Relink all scripts in your project to the new scripts.
 - Any new Sprites, Materials, Resources, Prefabs, etc. should be put in a new folder with your level name under the respective folder in Assets.
   - ex. Sprites for a level called "Level2" should be put in the folder Assets/Sprites/Level2
+  - If you want to have slightly altered common assets, copy them to the new folder.
 - In build settings, add the Connection and Lobby scenes if they are not already there, then add your level scene to the "Scenes to Build" list.
 - In the Connection scene, open the game object named "Network", then open the NetworkingManager component.
   - Add any prefabs you added to the NetworkedPrefabs list, then add the name of your scene to the list of Registered Scene Names.
