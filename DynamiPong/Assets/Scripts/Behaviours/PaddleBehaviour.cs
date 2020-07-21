@@ -15,7 +15,7 @@ public class PaddleBehaviour : NetworkedBehaviour
 
     // Bot
     protected bool isBot = false;
-    protected Level1Ball botBall = null;
+    protected BallBehaviour botBall = null;
 
     /// <summary>
     /// Does NOT get called by Unity
@@ -72,7 +72,7 @@ public class PaddleBehaviour : NetworkedBehaviour
         // Find Ball
         if (botBall == null)
         {
-            botBall = GameObject.FindObjectOfType<Level1Ball>();
+            botBall = GameObject.FindObjectOfType<BallBehaviour>();
         }
 
         // Movement
