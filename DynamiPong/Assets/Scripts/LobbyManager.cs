@@ -6,34 +6,40 @@ using System;
 using MLAPI.Messaging;
 using MLAPI.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LobbyManager : NetworkedBehaviour
 {
     // UI
-    public Text connectText;
-    public Text readyText;
-    public Dropdown levelDropdown;
-    public Text countdownText;
-    public Button readyButton;
-    public Button botButton;
+    private LobbyCanvas canvas;
 
     // Keep track of connections on Server
     private int connected;
-    private int ready;
+    private List<ulong> readyPlayers;
     private bool localReady;
+    
 
-    // Start is called before the first frame update
     public override void NetworkStart()
     {
+        // Find the canvas. Initialize because it gets updated before Start().
+        canvas = FindObjectOfType<LobbyCanvas>();
+        canvas.initialize();
+
+        // init vars
+        readyPlayers = new List<ulong>();
+
         if (IsServer)
         {
-            NetworkingManager.Singleton.OnClientConnectedCallback += UpdateConnected;
-            NetworkingManager.Singleton.OnClientDisconnectCallback += UpdateConnected;
+            // Call callbacks to track connections
+            NetworkingManager.Singleton.OnClientConnectedCallback += updateConnections;
+            NetworkingManager.Singleton.OnClientDisconnectCallback += updateConnections;
         }
+
+        canvas.updateConnectedPanel(readyPlayers);
     }
 
     //--------------------------------------------
-    // Buttons
+    // Button Callbacks
     //--------------------------------------------
 
     // Ready Button Clicked
@@ -42,16 +48,26 @@ public class LobbyManager : NetworkedBehaviour
         // Toggle readiness
         localReady = !localReady;
 
-        // Updated UI - Button becomes cancel button
-        // readyButton.GetComponentInChildren<Text>().text = localReady ? "Cancel" : "Ready";
+        canvas.readyButton.GetComponentInChildren<Text>().text = localReady ? "Cancel" : "Ready";
 
-        InvokeServerRpc(NotifyReadyForServer, localReady);
+        InvokeServerRpc(NotifyReadyForServer, localReady, NetworkingManager.Singleton.LocalClientId);
     }
 
     // Bot Button Clicked
     public void OnBotButton()
     {
-        // InvokeServerRpc(SendBot);
+        InvokeServerRpc(StartBotModeOnServer);
+    }
+
+    // Disconnect Button Clicked
+    public void OnDisconnectButton()
+    {
+        // Disconnect ourselves
+        NetworkingManager.Singleton.DisconnectClient(NetworkingManager.Singleton.LocalClientId);
+        // Destroy old network
+        Destroy(GameObject.FindGameObjectWithTag("Network"));
+        // Go back
+        SceneManager.LoadScene("Connection");
     }
 
     //--------------------------------------------
@@ -59,36 +75,87 @@ public class LobbyManager : NetworkedBehaviour
     //--------------------------------------------
 
     [ServerRPC(RequireOwnership = false)]
-    public void NotifyReadyForServer(bool isReady)
+    public void NotifyReadyForServer(bool isReady, ulong clientId)
     {
-        ready += isReady ? 1 : -1;
-
-        if (ready >= 2 && connected >= 2)
+        if (isReady)
         {
-            // Enough players are ready
-            // InvokeClientRpcOnEveryone(StartCountdown, 5);
-            Invoke("SwitchScene", 5);
+            readyPlayers.Add(clientId);
+        } else
+        {
+            readyPlayers.Remove(clientId);
+        }
+
+        InvokeClientRpcOnEveryone(UpdateReadyOnClients, clientId);
+
+        if (readyPlayers.Count >= 2)
+        {
+            // Enough players are ready, launch with delay
+            startGame();
         }
     }
 
-    public void UpdateConnected(ulong clientId)
+    // Server-Side, notifies clients and queues scene switch
+    private void startGame()
     {
-        connected = NetworkingManager.Singleton.ConnectedClients.Count;
-        InvokeClientRpcOnEveryone(UpdatedConnectedOnClients, connected, ready);
+        int delay = 5;
+        InvokeClientRpcOnEveryone(StartCountdownOnClient, delay);
+        Invoke("SwitchScene", delay);
+    }
+
+    // Server-Side, called by connect/disconnect callbacks
+    public void updateConnections(ulong clientId)
+    {
+        connected = NetworkingManager.Singleton.ConnectedClientsList.Count;
+
+        // Reset readiness
+        if (readyPlayers.Contains(clientId))
+        {
+            readyPlayers.Remove(clientId);
+        }
+
+        InvokeClientRpcOnEveryone(UpdateConnectedOnClients, connected);
     }
 
     [ClientRPC]
-    public void UpdatedConnectedOnClients(int connected, int ready)
+    public void UpdateConnectedOnClients(int connected)
     {
         this.connected = connected;
-        this.ready = ready;
-        UpdateConnectedAndReadyUI();
+
+        // UI
+        canvas.updateConnectedPanel(readyPlayers);
+        canvas.botButton.interactable = connected < 2; // Bot button disabled if there are two or more players
     }
 
-    private void UpdateConnectedAndReadyUI()
+    [ClientRPC]
+    public void UpdateReadyOnClients(ulong clientId)
     {
-        // connectText.text = "Connected: " + connected;
-        // readyText.text = "Ready: " + ready;
+        if (!IsHost)
+        {
+            if (readyPlayers.Contains(clientId))
+            {
+                readyPlayers.Remove(clientId);
+            }
+            else
+            {
+                readyPlayers.Add(clientId);
+            }
+        }
+
+        // UI
+        canvas.updateConnectedPanel(readyPlayers);
+    }
+
+
+    // A client wants to play with bot
+    [ServerRPC(RequireOwnership = false)]
+    public void StartBotModeOnServer()
+    {
+        GameObject botFlag = new GameObject();
+        botFlag.tag = "BotFlag";
+        DontDestroyOnLoad(botFlag);
+
+        // Start Game
+        startGame();
     }
 
     //--------------------------------------------
@@ -100,26 +167,29 @@ public class LobbyManager : NetworkedBehaviour
     {
         if (IsServer)
         {
-            // InvokeClientRpcOnEveryone(SetDropdownValue, levelDropdown.value);
+            InvokeClientRpcOnEveryone(SetDropdownValueOnClient, canvas.levelDropdown.value);
         }
         else
         {
-            // InvokeServerRpc(SendDropdownValue, levelDropdown.value);
+            InvokeServerRpc(SendDropdownValueToServer, canvas.levelDropdown.value);
         }
     }
 
     // Client recieves new dropdown value from the server
     [ClientRPC]
-    public void SetDropdownValue(int value)
+    public void SetDropdownValueOnClient(int value)
     {
-        // levelDropdown.SetValueWithoutNotify(value);
+        canvas.levelDropdown.SetValueWithoutNotify(value);
+
+        // TODO: Set level preview based on dropdown value
+        // canvas.levelPreview = 
     }
 
     // Server recieves new dropdown value from a client
     [ServerRPC(RequireOwnership = false)]
-    public void SendDropdownValue(int value)
+    public void SendDropdownValueToServer(int value)
     {
-        // levelDropdown.value = value;
+        canvas.levelDropdown.value = value;
     }
 
     //--------------------------------------------
@@ -128,33 +198,14 @@ public class LobbyManager : NetworkedBehaviour
 
     // Initiates scene switch and countdown (client side)
     [ClientRPC]
-    public void StartCountdown(int delay)
+    public void StartCountdownOnClient(int delay)
     {
-        StartCoroutine(countdown(5));
-
-        // Disable UI after countdown starts
-        // readyButton.interactable = false;
-        // botButton.interactable = false;
-        // levelDropdown.interactable = false;
-    }
-
-    // Switches level after a countdown of "delay" seconds
-    private IEnumerator countdown(int delay)
-    {
-        for (int i = delay - 1; i > 0; i--)
-        {
-            // Update the countdown text
-            // countdownText.text = i.ToString();
-            yield return new WaitForSeconds(1);
-        }
+        canvas.startCountdown(delay);
     }
 
     // Server switches the Scene based on Dropdown selection
     public void SwitchScene()
     {
-        // NetworkSceneManager.SwitchScene(levelDropdown.captionText.text);
+        NetworkSceneManager.SwitchScene(canvas.levelDropdown.captionText.text);
     }
-
-    
-
 }

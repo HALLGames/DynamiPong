@@ -8,6 +8,8 @@ TagManager:
   - Paddle
   - Wall
   - Goal
+  - BotFlag
+  - Network
   layers:
   - Default
   - TransparentFX

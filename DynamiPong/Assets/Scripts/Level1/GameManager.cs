@@ -5,6 +5,7 @@ using MLAPI;
 using UnityEngine.UI;
 using MLAPI.Messaging;
 using MLAPI.SceneManagement;
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkedBehaviour
 {
@@ -25,7 +26,16 @@ public class GameManager : NetworkedBehaviour
     {
         if (IsServer)
         {
+            // On Disconnect callback - end the game if a player disconnects
             NetworkingManager.Singleton.OnClientDisconnectCallback += endGame;
+
+            // Check if we should use a bot - bot flag created by lobby
+            GameObject botFlag = GameObject.FindGameObjectWithTag("BotFlag");
+            if (botFlag != null)
+            {
+                useBot = true;
+                Destroy(botFlag);
+            }
 
             // Spawn paddles
             spawnPaddles();
@@ -67,6 +77,19 @@ public class GameManager : NetworkedBehaviour
         }
     }
 
+    // Spawn ball in center of screen
+    void spawnBall()
+    {
+        // If we don't have the prefab, find it
+        if (ballPrefab == null)
+        {
+            ballPrefab = Network.GetPrefab<Ball>("Ball");
+        }
+
+        ball = Instantiate(ballPrefab, transform.position, ballPrefab.transform.rotation);
+        ball.GetComponent<NetworkedObject>().Spawn();
+    }
+
     public void scoreGoal(bool onLeft)
     {
         // Adds one point to the player opposite to the goal
@@ -100,17 +123,14 @@ public class GameManager : NetworkedBehaviour
         rightScoreText.text = rightScore.ToString();
     }
 
-    // Spawn ball in center of screen
-    void spawnBall()
+    public void OnDisconnectButton()
     {
-        // If we don't have the prefab, find it
-        if (ballPrefab == null)
-        {
-            ballPrefab = Network.GetPrefab<Ball>("Ball");
-        }
-
-        ball = Instantiate(ballPrefab, transform.position, ballPrefab.transform.rotation);
-        ball.GetComponent<NetworkedObject>().Spawn();
+        // Disconnect ourselves
+        NetworkingManager.Singleton.DisconnectClient(NetworkingManager.Singleton.LocalClientId);
+        // Destroy old network
+        Destroy(GameObject.FindGameObjectWithTag("Network"));
+        // Go back
+        SceneManager.LoadScene("Connection");
     }
 
     void endGame(ulong clientId)
