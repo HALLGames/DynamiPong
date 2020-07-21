@@ -14,7 +14,7 @@ Install the following tools to setup the development environment:
 - Visual Studio 2019 Community: https://visualstudio.microsoft.com/vs/community/
   - see also https://docs.microsoft.com/en-us/visualstudio/cross-platform/visual-studio-tools-for-unity?view=vs-2019
 
-- Unity 2019.4.3f1 - https://unity3d.com/get-unity/download
+- Unity 2019.4.4f1 - https://unity3d.com/get-unity/download
 
 - WinMerge - diffing: https://winmerge.org/
 
@@ -27,7 +27,7 @@ Install the following tools to setup the development environment:
 ## Project Setup
 Use the command (in the folder you want):
 ```
-git clone https://github.com/HALLGames/PongPrototype
+git clone https://github.com/HALLGames/DynamiPong
 ```
 Open Unity Hub, click "Add", then select the folder "DynamiPong/DynamiPong". 
 
