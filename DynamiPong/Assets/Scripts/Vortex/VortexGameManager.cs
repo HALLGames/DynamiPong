@@ -13,8 +13,8 @@ public class VortexGameManager : GameManagerBehaviour
 
     protected override void getPrefabs()
     {
-        ballPrefab = Network.GetPrefab<TemplateBall>("TemplateBall");
-        paddlePrefab = Network.GetPrefab<TemplatePaddle>("TemplatePaddle");
+        ballPrefab = Network.GetPrefab<VortexBall>("VortexBall");
+        paddlePrefab = Network.GetPrefab<VortexPaddle>("VortexPaddle");
     }
 }
 
