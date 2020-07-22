@@ -950,6 +950,7 @@ MonoBehaviour:
     m_Options:
     - m_Text: TemplateLevel
       m_Image: {fileID: 0}
+    - m_Text: Vortex
     - m_Text: ExampleLevel
       m_Image: {fileID: 0}
   m_OnValueChanged:
