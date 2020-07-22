@@ -950,11 +950,8 @@ MonoBehaviour:
     m_Options:
     - m_Text: TemplateLevel
       m_Image: {fileID: 0}
-<<<<<<< HEAD
     - m_Text: Vortex
-=======
     - m_Text: ExampleLevel
->>>>>>> a7b451abe00e059b670200d5c53afdba38b97a85
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
