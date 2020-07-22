@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Levels/Level2.unity
     guid: 91cfc326434e52244af9ab664ef875eb
+  - enabled: 1
+    path: Assets/Scenes/Levels/Vortex.unity
+    guid: 4cc505a391a265548b5a543c62fcf699
   m_configObjects: {}

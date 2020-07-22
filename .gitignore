@@ -58,6 +58,10 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# MLAPI
+MLAPI-Installer.unitypackage.meta
+MLAPI.unitypackage.meta
+
 
 # --- Windows gitignores
 #
