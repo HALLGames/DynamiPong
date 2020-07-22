@@ -5,7 +5,7 @@ using MLAPI;
 using MLAPI.Messaging;
 
 
-public class Level1Ball : BallBehaviour
+public class ExampleLevelBall : BallBehaviour
 {
     // Start is called before the first frame update
     new void Start()
@@ -57,16 +57,9 @@ public class Level1Ball : BallBehaviour
         return newVelocity.normalized;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    protected override void OnCollisionEnter2D(Collision2D collision)
     {
-        // Prevent sticking to the wall
-        if (collision.transform.tag == "Wall")
-        {
-            if (Mathf.Abs(body.velocity.y) < 0.2)
-            {
-                body.velocity = new Vector2(body.velocity.x, 0.5f);
-            }
-        }
+        base.OnCollisionEnter2D(collision);
     }
 }
 

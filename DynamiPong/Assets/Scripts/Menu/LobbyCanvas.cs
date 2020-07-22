@@ -1,7 +1,9 @@
 ﻿using MLAPI;
 using MLAPI.Connection;
+using MLAPI.Transports.UNET;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +17,8 @@ public class LobbyCanvas : MonoBehaviour
     public Text countdownText;
     public Button readyButton;
     public Button botButton;
+    public RectTransform hostPanel;
+    public Text hostText;
 
     private Network network;
 
@@ -27,9 +31,10 @@ public class LobbyCanvas : MonoBehaviour
         countdownText.text = string.Empty;
 
         // TODO: Auto-init the dropdown with levels
+        // initDropdown();
 
         // TODO: Level previews
-        // levelPreview = 
+        // levelPreview =
     }
 
     public void updateReadyButton(bool localReady)
@@ -77,9 +82,7 @@ public class LobbyCanvas : MonoBehaviour
         StartCoroutine(countdown(delay));
 
         // Disable UI after countdown starts
-        readyButton.interactable = false;
-        botButton.interactable = false;
-        levelDropdown.interactable = false;
+        disableUI();
     }
 
     // Switches level after a countdown of "delay" seconds
@@ -94,4 +97,48 @@ public class LobbyCanvas : MonoBehaviour
         countdownPanel.gameObject.SetActive(false);
     }
 
+    private void disableUI()
+    {
+        // Disable most buttons
+        readyButton.interactable = false;
+        botButton.interactable = false;
+        levelDropdown.interactable = false;
+
+        // Fade out preview
+        levelPreview.CrossFadeAlpha(100, 0, true);
+    }
+
+    public void initHostPanel(bool isHost)
+    {
+        if (isHost)
+        {
+            UnetTransport transport = network.GetComponent<UnetTransport>();
+            hostText.text =
+                "- Hosting at - \n" +
+                "Address: " + transport.ConnectAddress + "\n" +
+                "Port: " + transport.ConnectPort;
+        }
+        else
+        {
+            hostPanel.gameObject.SetActive(false);
+        }
+    }
+
+    public void initDropdown()
+    {
+        string directoryPath = "Assets/Scenes/Levels/";
+        string[] files = Directory.GetFiles(directoryPath);
+        for (int i = 0; i < files.Length; i++)
+        {
+            string fileName = files[i];
+            fileName = fileName.Substring(directoryPath.Length);
+            string[] fileSplit = fileName.Split('.');
+            if (fileSplit[1] == "unity")
+            {
+                fileName = fileName.Split('.')[0];
+                if (fileName != "TemplateLevel" || fileName != "ExampleLevel")
+                    levelDropdown.options.Add(new Dropdown.OptionData(fileName));
+            }
+        }   
+    }
 }

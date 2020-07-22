@@ -30,7 +30,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
     /// </summary>
     protected void Start()
     {
-
+        
     }
 
     /// <summary>
