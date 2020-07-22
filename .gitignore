@@ -59,7 +59,8 @@ sysinfo.txt
 crashlytics-build.properties
 
 # MLAPI
-*/MLAPI/
+MLAPI-Installer.unitypackage.meta
+MLAPI.unitypackage.meta
 
 
 # --- Windows gitignores
