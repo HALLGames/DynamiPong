@@ -17,25 +17,28 @@ public class LobbyManager : NetworkedBehaviour
     private int connected;
     private List<ulong> readyPlayers;
     private bool localReady;
-    
 
     public override void NetworkStart()
     {
+        // init vars
+        readyPlayers = new List<ulong>();
+
         // Find the canvas. Initialize because it gets updated before Start().
         canvas = FindObjectOfType<LobbyCanvas>();
         canvas.initialize();
 
-        // init vars
-        readyPlayers = new List<ulong>();
+        // UI
+        canvas.updateConnectedPanel(readyPlayers);
+        canvas.initHostPanel(IsHost);
 
-        if (IsServer)
+            if (IsServer)
         {
             // Call callbacks to track connections
             NetworkingManager.Singleton.OnClientConnectedCallback += updateConnections;
             NetworkingManager.Singleton.OnClientDisconnectCallback += updateConnections;
         }
 
-        canvas.updateConnectedPanel(readyPlayers);
+        
     }
 
     //--------------------------------------------

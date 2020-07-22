@@ -24,5 +24,11 @@ public class TemplateBall : BallBehaviour
     {
         base.ballMovement();
     }
+
+    // Custom collision logic
+    protected override void OnCollisionEnter2D(Collision2D collision)
+    {
+        base.OnCollisionEnter2D(collision);
+    }
 }
 

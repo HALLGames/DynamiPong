@@ -7,7 +7,7 @@ using MLAPI.Messaging;
 using MLAPI.SceneManagement;
 using UnityEngine.SceneManagement;
 
-public class Level1GameManager : GameManagerBehaviour
+public class ExampleLevelGameManager : GameManagerBehaviour
 {
     public override void NetworkStart()
     {
@@ -16,8 +16,8 @@ public class Level1GameManager : GameManagerBehaviour
 
     protected override void getPrefabs()
     {
-        ballPrefab = Network.GetPrefab<Level1Ball>("Level1Ball");
-        paddlePrefab = Network.GetPrefab<Level1Paddle>("Level1Paddle");
+        ballPrefab = Network.GetPrefab<ExampleLevelBall>("ExampleLevelBall");
+        paddlePrefab = Network.GetPrefab<ExampleLevelPaddle>("ExampleLevelPaddle");
     }
 }
 
