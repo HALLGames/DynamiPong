@@ -4,8 +4,7 @@ using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
 
-
-public class Level1Paddle : PaddleBehaviour
+public class ExampleLevelPaddle : PaddleBehaviour
 {
     // Bot stuff
     private bool isBoosting;

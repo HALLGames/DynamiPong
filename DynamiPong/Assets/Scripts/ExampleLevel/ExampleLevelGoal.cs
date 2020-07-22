@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Level1Goal : GoalBehaviour
+public class ExampleLevelGoal : GoalBehaviour
 {
     // Start is called before the first frame update
     new void Start()

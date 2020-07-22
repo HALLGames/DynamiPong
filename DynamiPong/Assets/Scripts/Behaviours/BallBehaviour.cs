@@ -52,4 +52,26 @@ public class BallBehaviour : NetworkedBehaviour
         transform.position = position;
         body.velocity = velocity;
     }
+
+    /// <summary>
+    /// Override this method to add custom collision logic
+    /// </summary>
+    /// <param name="collision"></param>
+    protected virtual void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Prevent sticking to the wall
+        if (collision.transform.tag == "Wall")
+        {
+            if (body.velocity.y > 0 && body.velocity.y < 0.25f)
+            {
+                // Hit top wall with low velocity - launch down
+                body.velocity = new Vector2(body.velocity.x, -0.5f);
+            }
+            else if (body.velocity.y < 0 && body.velocity.y > -0.25f)
+            {
+                // Hit bottom wall with low velocity - launch up
+                body.velocity = new Vector2(body.velocity.x, 0.5f);
+            }
+        }
+    }
 }
