@@ -1000,6 +1000,7 @@ MonoBehaviour:
     - Lobby
     - TemplateLevel
     - Level1
+    - Vortex
     AllowRuntimeSceneChanges: 0
     NetworkedPrefabs:
     - Prefab: {fileID: 2747698423415181518, guid: df0b6d982a524f742b1b5da7505b57c5,
@@ -1018,6 +1019,12 @@ MonoBehaviour:
         type: 3}
       PlayerPrefab: 0
     - Prefab: {fileID: 2727865309872537701, guid: 1a3c5dcc90ce6984c8062a32323dc9bd,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 2747698423415181518, guid: ed390a99fcbab524a83c8abe75fba9c7,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 2727865309872537701, guid: ab8e5b279c86f4f4499c699a8401c543,
         type: 3}
       PlayerPrefab: 0
     PlayerPrefabHash:
