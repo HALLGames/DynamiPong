@@ -13,13 +13,13 @@ TBD
 
 Install the following tools to setup the development environment:
 
-- Discord - Forge Networking developers and questions: https://discord.com/
+- Discord - https://discord.com/
   - [Join our Discord](https://discord.gg/nSVjNRs)
 
 - Visual Studio 2019 Community: https://visualstudio.microsoft.com/vs/community/
   - see also https://docs.microsoft.com/en-us/visualstudio/cross-platform/visual-studio-tools-for-unity?view=vs-2019
 
-- Unity 2019.4.4f1 - https://unity3d.com/get-unity/download
+- Unity 2019.4.3f1 - https://unity3d.com/get-unity/download
 
 - WinMerge - diffing: https://winmerge.org/
 
@@ -51,7 +51,7 @@ Open Unity Hub, click "Add", then select the folder "DynamiPong/DynamiPong".
 - Open each script in Visual Studio. 
 - Change each file's Class name to their file name.
   - Ex. Change ```public Class TemplatePaddle : PaddleBehaviour``` to ```public Class LevelNamePaddle : PaddleBehaviour``` 
-- In your level scene, go through every game object and replace the scripts with the new ones that your made.
+- In your level scene, go through every game object and replace the scripts with the new ones that you made.
 - Open the Prefabs folder (Assets/Prefabs) and duplicate the TemplateLevel folder.
   - Rename the prefabs with the same name scheme
   - Change the Prefab Hash Generator in the NetworkObject component to their name
@@ -83,3 +83,4 @@ Open Unity Hub, click "Add", then select the folder "DynamiPong/DynamiPong".
   - Ex. Sprites for a level called "Level2" should be put in the folder Assets/Sprites/Level2
   - If you want to have slightly altered common assets, copy them to the new folder.
 - When you copy prefabs with NetworkObjects, remember to change the Prefab Hash Generator, otherwise MLAPI gets mad.
+- One of the most important methods to override is getPrefabs() in the GameManager, since it specifies which prefabs are used.
