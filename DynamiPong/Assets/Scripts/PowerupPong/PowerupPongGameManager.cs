@@ -4,7 +4,7 @@ using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
 
-public class Level2GameManager : GameManagerBehaviour
+public class PowerupPongGameManager : GameManagerBehaviour
 {
     public override void NetworkStart()
     {
@@ -13,7 +13,9 @@ public class Level2GameManager : GameManagerBehaviour
 
     protected override void getPrefabs()
     {
-        ballPrefab = Network.GetPrefab<PowerupPongBall>("TemplateBall");
+        ballPrefab = Network.GetPrefab<TemplateBall>("TemplateBall");
         paddlePrefab = Network.GetPrefab<PowerupPongPaddle>("TemplatePaddle");
     }
 }
+
+
