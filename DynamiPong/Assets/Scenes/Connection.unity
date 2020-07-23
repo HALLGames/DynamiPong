@@ -1001,6 +1001,7 @@ MonoBehaviour:
     - TemplateLevel
     - Vortex
     - ExampleLevel
+    - Dodgeball
     AllowRuntimeSceneChanges: 0
     NetworkedPrefabs:
     - Prefab: {fileID: 2747698423415181518, guid: df0b6d982a524f742b1b5da7505b57c5,
@@ -1025,6 +1026,12 @@ MonoBehaviour:
         type: 3}
       PlayerPrefab: 0
     - Prefab: {fileID: 2727865309872537701, guid: ab8e5b279c86f4f4499c699a8401c543,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 2747698423415181518, guid: c3477585fad8e9e44bdf3fe25bd2b994,
+        type: 3}
+      PlayerPrefab: 0
+    - Prefab: {fileID: 2727865309872537701, guid: e73ccde53f2497c46a4b2c8755fa1de3,
         type: 3}
       PlayerPrefab: 0
     PlayerPrefabHash:
