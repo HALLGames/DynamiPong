@@ -10,6 +10,7 @@ TagManager:
   - Goal
   - BotFlag
   - Network
+  - Powerup
   layers:
   - Default
   - TransparentFX

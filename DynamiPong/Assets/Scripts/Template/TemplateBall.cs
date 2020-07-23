@@ -18,6 +18,11 @@ public class TemplateBall : BallBehaviour
         base.Update();
     }
 
+    protected override void launchBall()
+    {
+        base.launchBall();
+    }
+
     // Custom ball movement
     protected override void ballMovement()
     {
