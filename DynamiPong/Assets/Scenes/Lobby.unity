@@ -951,7 +951,10 @@ MonoBehaviour:
     - m_Text: TemplateLevel
       m_Image: {fileID: 0}
     - m_Text: Vortex
+      m_Image: {fileID: 0}
     - m_Text: ExampleLevel
+      m_Image: {fileID: 0}
+    - m_Text: PowerupPong
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

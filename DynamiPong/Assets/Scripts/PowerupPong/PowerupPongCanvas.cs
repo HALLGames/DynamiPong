@@ -1,12 +1,50 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PowerupPongLevelCanvas : LevelCanvasBehaviour
+public class PowerupPongCanvas : LevelCanvasBehaviour
 {
+    public Image leftPowerupImage;
+    public Image rightPowerupImage;
+
+    private PowerupPongPowerupManager powerupManager;
+
     // Start is called before the first frame update
     new void Start()
     {
         base.Start();
+
+        powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
+
+        clearPowerupImage(true);
+        clearPowerupImage(false);
+    }
+
+    public void clearPowerupImage(bool onLeft)
+    {
+        if (onLeft)
+        {
+            leftPowerupImage.color = Color.clear;
+        }
+        else
+        {
+            rightPowerupImage.color = Color.clear;
+        }
+    }
+
+    public void setPowerupImage(PowerupPongPowerupManager.PowerupType power, bool onLeft)
+    {
+        if (onLeft)
+        {
+            leftPowerupImage.color = Color.white;
+            leftPowerupImage.sprite = powerupManager.getSprite(power);
+        } 
+        else
+        {
+            rightPowerupImage.color = Color.white;
+            rightPowerupImage.sprite = powerupManager.getSprite(power);
+        }
+        
     }
 }

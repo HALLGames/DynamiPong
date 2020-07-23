@@ -12,6 +12,9 @@ public class GameManagerBehaviour : NetworkedBehaviour
     // Canvas
     protected LevelCanvasBehaviour canvas;
 
+    // Network
+    protected Network network;
+
     // Bot
     protected bool useBot;
 
@@ -23,6 +26,12 @@ public class GameManagerBehaviour : NetworkedBehaviour
     protected PaddleBehaviour paddlePrefab;
     protected BallBehaviour ballPrefab;
     protected BallBehaviour ball;
+    protected PaddleBehaviour leftPaddle;
+    protected PaddleBehaviour rightPaddle;
+
+    // Player names
+    protected string leftName;
+    protected string rightName;
 
     /// <summary>
     /// Does NOT get called by Unity
@@ -48,8 +57,9 @@ public class GameManagerBehaviour : NetworkedBehaviour
     /// </summary>
     public override void NetworkStart()
     {
-        // Find Canvas
+        // Find Canvas & Network
         canvas = FindObjectOfType<LevelCanvasBehaviour>();
+        network = FindObjectOfType<Network>();
 
         // Add disconnect button listener
         canvas.disconnectButton.onClick.AddListener(OnDisconnectButton);
@@ -94,22 +104,26 @@ public class GameManagerBehaviour : NetworkedBehaviour
         // Paddle 1 - Positioned on the left
 
         ulong clientId = NetworkingManager.Singleton.ConnectedClientsList[0].ClientId;
-        PaddleBehaviour paddle1 = Instantiate<PaddleBehaviour>(paddlePrefab, Vector3.zero, Quaternion.identity);
-        paddle1.GetComponent<NetworkedObject>().SpawnWithOwnership(clientId);
-        paddle1.init(true);
+        leftPaddle = Instantiate<PaddleBehaviour>(paddlePrefab, Vector3.zero, Quaternion.identity);
+        leftPaddle.GetComponent<NetworkedObject>().SpawnWithOwnership(clientId);
+        leftPaddle.init(true);
+        leftName = network.getConnectedPlayerNames()[clientId];
 
         if (useBot)
         {
             // Bot
-            Instantiate(paddlePrefab).setupBot();
+            rightPaddle = Instantiate(paddlePrefab);
+            rightPaddle.setupBot();
+            rightName = "Bot";
         }
         else
         {
             // Paddle 2 - Positioned on the right
             clientId = NetworkingManager.Singleton.ConnectedClientsList[1].ClientId;
-            PaddleBehaviour paddle2 = Instantiate<PaddleBehaviour>(paddlePrefab, Vector3.zero, Quaternion.identity);
-            paddle2.GetComponent<NetworkedObject>().SpawnWithOwnership(clientId);
-            paddle2.init(false);
+            rightPaddle = Instantiate<PaddleBehaviour>(paddlePrefab, Vector3.zero, Quaternion.identity);
+            rightPaddle.GetComponent<NetworkedObject>().SpawnWithOwnership(clientId);
+            rightPaddle.init(false);
+            rightName = network.getConnectedPlayerNames()[clientId];
         }
     }
 
@@ -157,10 +171,10 @@ public class GameManagerBehaviour : NetworkedBehaviour
     }
 
     [ClientRPC]
-    public void UpdateScoreText(int leftScore, int rightScore)
+    public virtual void UpdateScoreText(int leftScore, int rightScore)
     {
-        canvas.leftScoreText.text = leftScore.ToString();
-        canvas.rightScoreText.text = rightScore.ToString();
+        canvas.leftScoreText.text = leftName + ": " + leftScore.ToString();
+        canvas.rightScoreText.text = rightName + ": " + rightScore.ToString();
     }
 
     public void OnDisconnectButton()

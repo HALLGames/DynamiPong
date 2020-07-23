@@ -11,9 +11,6 @@ public class ExampleLevelBall : BallBehaviour
     new void Start()
     {
         base.Start();
-
-        // Launch in pseudo-random direction
-        body.velocity = randomNormalizedVelocity() * speed;
     }
 
     // Update is called once per frame
@@ -38,23 +35,6 @@ public class ExampleLevelBall : BallBehaviour
 
         // Keep velocity constant
         body.velocity = new Vector2(normX, body.velocity.normalized.y) * speed;
-    }
-
-    // Returns a pseudo-random Vector2 with a magnitude of 1
-    private Vector2 randomNormalizedVelocity()
-    {
-        Vector2 newVelocity;
-        // Pseudo-random starting direction
-        // x-dir is always either 1 or -1, y-dir is a float between 1 and -1
-        if (Random.value > 0.5)
-        {
-            newVelocity = new Vector2(1f, Random.Range(-1f, 1f));
-        }
-        else
-        {
-            newVelocity = new Vector2(-1f, Random.Range(-1f, 1f));
-        }
-        return newVelocity.normalized;
     }
 
     protected override void OnCollisionEnter2D(Collision2D collision)

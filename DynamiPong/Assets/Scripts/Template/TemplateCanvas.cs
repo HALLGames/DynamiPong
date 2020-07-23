@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TemplateLevelCanvas : LevelCanvasBehaviour
+public class TemplateCanvas : LevelCanvasBehaviour
 {
     // Start is called before the first frame update
     new void Start()

@@ -82,7 +82,7 @@ public class PaddleBehaviour : NetworkedBehaviour
             float paddleY = transform.position.y;
 
             // Normal movement
-            body.velocity = new Vector2(0, ballY - paddleY) * 4;
+            body.velocity = new Vector2(0, ballY - paddleY) * speed;
         }
 
         // Sync
@@ -118,6 +118,7 @@ public class PaddleBehaviour : NetworkedBehaviour
     {
         isBot = true;
         transform.position = rightPosition;
+        speed = 4.0f;
     }
 
     //--------------------------------------------------

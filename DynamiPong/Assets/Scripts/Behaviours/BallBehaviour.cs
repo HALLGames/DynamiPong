@@ -19,8 +19,7 @@ public class BallBehaviour : NetworkedBehaviour
         // Get body
         body = GetComponent<Rigidbody2D>();
 
-        // Move
-        body.velocity = Vector2.one.normalized * speed;
+        launchBall();
     }
 
     /// <summary>
@@ -36,6 +35,15 @@ public class BallBehaviour : NetworkedBehaviour
         {
             InvokeClientRpcOnEveryone(SendMovementToClients, transform.position, body.velocity);
         }
+    }
+
+    /// <summary>
+    /// Override this method to customize the launching of the ball
+    /// </summary>
+    protected virtual void launchBall()
+    {
+        // Launch in pseudo-random direction
+        body.velocity = BallBehaviour.randomNormalizedVelocity() * speed;
     }
 
     /// <summary>
@@ -73,5 +81,22 @@ public class BallBehaviour : NetworkedBehaviour
                 body.velocity = new Vector2(body.velocity.x, 0.5f);
             }
         }
+    }
+
+    // Returns a pseudo-random Vector2 with a magnitude of 1
+    public static Vector2 randomNormalizedVelocity()
+    {
+        Vector2 newVelocity;
+        // Pseudo-random starting direction
+        // x-dir is always either 1 or -1, y-dir is a float between 1 and -1
+        if (Random.value > 0.5)
+        {
+            newVelocity = new Vector2(1f, Random.Range(-1f, 1f));
+        }
+        else
+        {
+            newVelocity = new Vector2(-1f, Random.Range(-1f, 1f));
+        }
+        return newVelocity.normalized;
     }
 }

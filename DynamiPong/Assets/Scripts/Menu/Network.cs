@@ -5,30 +5,33 @@ using MLAPI;
 using System.Collections.Generic;
 using MLAPI.SceneManagement;
 using UnityEngine.UI;
+using MLAPI.Transports.UNET;
 
 public class Network : MonoBehaviour
 {
-    public InputField nameField;
-    public Toggle hostToggle;
-    public Button connectButton;
-    public Text connectingText;
-
     private Dictionary<ulong, string> connectedPlayerNames;
-
+    private ConnectionCanvas canvas;
 
     // Start is called before the first frame update
     void Start()
     {
-        connectingText.text = "";
+        canvas = FindObjectOfType<ConnectionCanvas>();
         connectedPlayerNames = new Dictionary<ulong, string>();
     }
 
     public void OnConnectClick()
     {
-        nameField.interactable = false;
-        hostToggle.interactable = false;
-        connectButton.interactable = false;
-        connectingText.text = "Connecting...";
+        canvas.disableUI();
+        if(canvas.hasValidPortInput())
+        {
+            // Change transport
+            UnetTransport transport = GetComponent<UnetTransport>();
+            transport.ConnectAddress = canvas.addressField.text;
+            transport.ConnectPort = Convert.ToInt32(canvas.portField.text);
+        } else
+        {
+            return;
+        }
 
         if (Application.isEditor)
         {
@@ -51,7 +54,7 @@ public class Network : MonoBehaviour
         } 
         else // Launched from Binary
         {
-            if (hostToggle.isOn)
+            if (canvas.hostToggle.isOn)
             {
                 startHost();
             } 
@@ -71,7 +74,7 @@ public class Network : MonoBehaviour
     private void startClient()
     {
         // Add name to Connection Data
-        byte[] connectionData = System.Text.Encoding.Default.GetBytes(nameField.text);
+        byte[] connectionData = System.Text.Encoding.Default.GetBytes(canvas.nameField.text);
 
         NetworkingManager.Singleton.NetworkConfig.ConnectionData = connectionData;
         NetworkingManager.Singleton.StartClient();
@@ -89,7 +92,7 @@ public class Network : MonoBehaviour
         NetworkingManager.Singleton.StartHost();
 
         // Add name because approval is not called for the host
-        addConnectedPlayer(NetworkingManager.Singleton.LocalClientId, nameField.text);
+        addConnectedPlayer(NetworkingManager.Singleton.LocalClientId, canvas.nameField.text);
     }
 
     // Gets approval and puts name into the list
@@ -107,6 +110,7 @@ public class Network : MonoBehaviour
         callback(false, null, approve, null, null);
     }
 
+    // Puts name in dictionary with clientId as the key
     private void addConnectedPlayer(ulong clientId, string name)
     {
         // If name is empty, call them "PlayerX", where X is the player count
@@ -206,6 +210,4 @@ public class Network : MonoBehaviour
 
         return "Unknown";
     }
-
-    
 }
