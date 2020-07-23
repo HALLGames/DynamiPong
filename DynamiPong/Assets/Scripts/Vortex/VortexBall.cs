@@ -11,7 +11,7 @@ public class VortexBall : BallBehaviour
     new void Start()
     {
         base.Start();
-        //launches ball in random direction
+        // Launch in pseudo-random direction
         body.velocity = randomNormalizedVelocity() * speed;
 
     }
@@ -39,8 +39,8 @@ public class VortexBall : BallBehaviour
         // Keep velocity constant
         body.velocity = new Vector2(normX, body.velocity.normalized.y) * speed;
     }
-
     // Returns a pseudo-random Vector2 with a magnitude of 1
+
     private Vector2 randomNormalizedVelocity()
     {
         Vector2 newVelocity;

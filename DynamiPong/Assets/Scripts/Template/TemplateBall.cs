@@ -4,7 +4,6 @@ using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
 
-
 public class TemplateBall : BallBehaviour
 {
     // Start is called before the first frame update
