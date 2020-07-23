@@ -4,7 +4,7 @@ using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
 
-public class VortexGameManager : GameManagerBehaviour
+public class DodgeballGameManager : GameManagerBehaviour
 {
     public override void NetworkStart()
     {
@@ -13,8 +13,8 @@ public class VortexGameManager : GameManagerBehaviour
 
     protected override void getPrefabs()
     {
-        ballPrefab = Network.GetPrefab<VortexBall>("VortexBall");
-        paddlePrefab = Network.GetPrefab<VortexPaddle>("VortexPaddle");
+        ballPrefab = Network.GetPrefab<DodgeballBall>("DodgeballBall");
+        paddlePrefab = Network.GetPrefab<DodgeballPaddle>("DodgeballPaddle");
     }
 }
 

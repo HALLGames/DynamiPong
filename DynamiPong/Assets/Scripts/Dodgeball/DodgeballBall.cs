@@ -4,8 +4,7 @@ using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
 
-
-public class VortexBall : BallBehaviour
+public class DodgeballBall : BallBehaviour
 {
     // Start is called before the first frame update
     new void Start()
@@ -13,7 +12,6 @@ public class VortexBall : BallBehaviour
         base.Start();
         // Launch in pseudo-random direction
         body.velocity = randomNormalizedVelocity() * speed;
-
     }
 
     // Update is called once per frame
@@ -36,8 +34,25 @@ public class VortexBall : BallBehaviour
             normX = Mathf.Clamp(normX, -1f, -0.5f);
         }
 
+        // Clamp y-velocity a little, in order to stop the ball from getting caught in the middle
+        float normY = body.velocity.normalized.y;
+        if (normY > 0.1)
+        {
+            normY = Mathf.Clamp(normY, 0.5f, 1f);
+        }
+        else
+        {
+            normY = Mathf.Clamp(normY, -1f, -0.5f);
+        }
+
         // Keep velocity constant
-        body.velocity = new Vector2(normX, body.velocity.normalized.y) * speed;
+        body.velocity = new Vector2(normX, normY) * speed;
+    }
+
+    // Custom collision logic
+    protected override void OnCollisionEnter2D(Collision2D collision)
+    {
+        base.OnCollisionEnter2D(collision);
     }
     // Returns a pseudo-random Vector2 with a magnitude of 1
 
@@ -56,6 +71,9 @@ public class VortexBall : BallBehaviour
         }
         return newVelocity.normalized;
     }
-
+    public void increaseSpeed()
+    {
+        speed += 1;
+    }
 }
 

@@ -1,0 +1,28 @@
+﻿using UnityEngine;
+
+public class DodgeballGoal : GoalBehaviour
+{
+    protected bool onLeft;
+    protected GameManagerBehaviour manager;
+    protected DodgeballBall dodgeballBall;
+
+    // Does NOT get called by Unity
+    // Call this method with base.Start() in the method "new void Start()"
+    protected void Start()
+    {
+        manager = FindObjectOfType<GameManagerBehaviour>();
+        dodgeballBall = FindObjectOfType<DodgeballBall>();
+        onLeft = transform.position.x < 0;
+    }
+
+    // Override this method for custom the goal trigger
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Ball")
+        {
+            // Hit by ball
+            dodgeballBall.increaseSpeed();
+        }
+    }
+}
+

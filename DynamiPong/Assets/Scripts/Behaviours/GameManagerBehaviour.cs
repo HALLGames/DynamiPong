@@ -134,6 +134,17 @@ public class GameManagerBehaviour : NetworkedBehaviour
         ball.GetComponent<NetworkedObject>().Spawn();
     }
 
+    // If there is a ball, destroy it and create a new one
+    public void respawnBall()
+    {
+        if (ball != null)
+        {
+            ball.GetComponent<NetworkedObject>().UnSpawn();
+            Destroy(ball.gameObject);
+            spawnBall();
+        }
+    }
+
     // Called by the goals.
     public void scoreGoal(bool ballHitOnLeft)
     {
