@@ -53,6 +53,10 @@ public class DodgeballBall : BallBehaviour
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
         base.OnCollisionEnter2D(collision);
+        if (collision.transform.tag == "Goal")
+        {
+            wallHit.Play();
+        }
     }
     // Returns a pseudo-random Vector2 with a magnitude of 1
 
