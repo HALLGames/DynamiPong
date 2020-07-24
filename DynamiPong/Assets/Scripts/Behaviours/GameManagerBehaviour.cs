@@ -6,6 +6,8 @@ using MLAPI.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using MLAPI.Messaging;
+using MLAPI.Transports.UNET;
+using MLAPI.NetworkedVar;
 
 public class GameManagerBehaviour : NetworkedBehaviour
 {
@@ -30,7 +32,9 @@ public class GameManagerBehaviour : NetworkedBehaviour
     protected PaddleBehaviour rightPaddle;
 
     // Player names
+    [SyncedVar]
     protected string leftName;
+    [SyncedVar]
     protected string rightName;
 
     /// <summary>
@@ -39,7 +43,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
     /// </summary>
     protected void Start()
     {
-        
+
     }
 
     /// <summary>
@@ -99,7 +103,10 @@ public class GameManagerBehaviour : NetworkedBehaviour
         ballPrefab = Network.GetPrefab<BallBehaviour>("BaseBall");
     }
 
-    protected void spawnPaddles()
+    /// <summary>
+    /// Override this method if you want to customize paddle spawning
+    /// </summary>
+    protected virtual void spawnPaddles()
     {
         // Paddle 1 - Positioned on the left
 
@@ -127,9 +134,12 @@ public class GameManagerBehaviour : NetworkedBehaviour
         }
     }
 
-    // Spawn ball in center of screen
+    /// <summary>
+    /// Override this method if you want to customize ball spawning
+    /// </summary>
     protected void spawnBall()
     {
+        // Spawn ball in center of screen
         ball = Instantiate(ballPrefab, transform.position, ballPrefab.transform.rotation);
         ball.GetComponent<NetworkedObject>().Spawn();
     }
@@ -188,20 +198,34 @@ public class GameManagerBehaviour : NetworkedBehaviour
         canvas.rightScoreText.text = rightName + ": " + rightScore.ToString();
     }
 
+    [ClientRPC]
     public void OnDisconnectButton()
     {
-        // Disconnect ourselves
-        NetworkingManager.Singleton.DisconnectClient(NetworkingManager.Singleton.LocalClientId);
+        if (IsHost)
+        {
+            // Disconnect everyone else, return to lobby
+            InvokeClientRpcOnEveryoneExcept(OnDisconnectButton, OwnerClientId);
+        }
+
         // Destroy old network
         Destroy(GameObject.FindGameObjectWithTag("Network"));
         // Go back
         SceneManager.LoadScene("Connection");
     }
 
-    protected void endGame(ulong clientId)
+    /// <summary>
+    /// Override this function to customize what happens when the game ends.
+    /// Make sure to unspawn network objects;
+    /// </summary>
+    /// <param name="clientId"></param>
+    protected virtual void endGame(ulong clientId)
     {
         ball.GetComponent<NetworkedObject>().UnSpawn();
-        // TODO: Check if we need to unspawn paddles
+        // Unspawn paddles and other things
+        if (IsHost)
+        {
+            leftPaddle.GetComponent<NetworkedObject>().UnSpawn();
+        }
 
         NetworkSceneManager.SwitchScene("Lobby");
     }

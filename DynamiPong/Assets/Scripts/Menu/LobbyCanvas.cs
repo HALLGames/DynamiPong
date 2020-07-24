@@ -76,6 +76,15 @@ public class LobbyCanvas : MonoBehaviour
         } 
     }
 
+    /// <summary>
+    /// Sets the connected panel text to input Text
+    /// </summary>
+    /// <param name="text">Text to be displayed in the connected panel</param>
+    public void updateConnectedPanel(string text)
+    {
+        playersText.text = text;
+    }
+
     public void startCountdown(int delay)
     {
         countdownPanel.gameObject.SetActive(true);
@@ -124,6 +133,7 @@ public class LobbyCanvas : MonoBehaviour
         }
     }
 
+    // Not in use
     public void initDropdown()
     {
         string directoryPath = "Assets/Scenes/Levels/";

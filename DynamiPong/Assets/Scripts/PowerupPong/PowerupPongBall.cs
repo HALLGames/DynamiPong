@@ -7,6 +7,7 @@ using MLAPI.Messaging;
 public class PowerupPongBall : BallBehaviour
 {
     protected new SpriteRenderer renderer;
+    private float baseSpeed;
 
     [HideInInspector]
     public PowerupPongPaddle lastTouchedPaddle;
@@ -19,6 +20,7 @@ public class PowerupPongBall : BallBehaviour
         renderer = GetComponent<SpriteRenderer>();
         renderer.color = Color.white;
         lastTouchedPaddle = null;
+        baseSpeed = speed;
     }
 
     // Update is called once per frame
@@ -75,15 +77,22 @@ public class PowerupPongBall : BallBehaviour
         renderer.color = color;
     }
 
-    public IEnumerator ChangeSpeed(float speedModifier, int duration)
+    public IEnumerator ChangeSpeed(float modifier, int duration)
     {
-        float oldSpeed = speed;
-        speed *= speedModifier;
+        speed *= modifier;
+        if (modifier > 1)
+        {
+            GetComponent<TrailRenderer>().emitting = true;
+        }
         // If duration < 0, effect lasts forever
         if (duration >= 0)
         {
             yield return new WaitForSeconds(duration);
-            speed = oldSpeed;
+            speed = baseSpeed;
+            if (gameObject != null)
+            {
+                GetComponent<TrailRenderer>().emitting = false;
+            }
         }
     }
 

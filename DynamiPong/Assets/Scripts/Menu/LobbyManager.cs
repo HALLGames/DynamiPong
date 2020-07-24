@@ -65,8 +65,11 @@ public class LobbyManager : NetworkedBehaviour
     // Disconnect Button Clicked
     public void OnDisconnectButton()
     {
-        // Disconnect ourselves
-        NetworkingManager.Singleton.DisconnectClient(NetworkingManager.Singleton.LocalClientId);
+        if (NetworkingManager.Singleton.IsConnectedClient)
+        {
+            // Disconnect ourselves
+            NetworkingManager.Singleton.DisconnectClient(NetworkingManager.Singleton.LocalClientId);
+        }
         // Destroy old network
         Destroy(GameObject.FindGameObjectWithTag("Network"));
         // Go back
@@ -88,7 +91,8 @@ public class LobbyManager : NetworkedBehaviour
             readyPlayers.Remove(clientId);
         }
 
-        InvokeClientRpcOnEveryone(UpdateReadyOnClients, clientId);
+        canvas.updateConnectedPanel(readyPlayers);
+        InvokeClientRpcOnEveryone(UpdateConnectedOnClients, connected, canvas.playersText.text);
 
         if (readyPlayers.Count >= 2)
         {
@@ -116,36 +120,18 @@ public class LobbyManager : NetworkedBehaviour
             readyPlayers.Remove(clientId);
         }
 
-        InvokeClientRpcOnEveryone(UpdateConnectedOnClients, connected);
-    }
+        canvas.updateConnectedPanel(readyPlayers);
+        InvokeClientRpcOnEveryone(UpdateConnectedOnClients, connected, canvas.playersText.text);
+    }   
 
     [ClientRPC]
-    public void UpdateConnectedOnClients(int connected)
+    public void UpdateConnectedOnClients(int connected, string text)
     {
         this.connected = connected;
 
         // UI
-        canvas.updateConnectedPanel(readyPlayers);
+        canvas.updateConnectedPanel(text);
         canvas.botButton.interactable = connected < 2; // Bot button disabled if there are two or more players
-    }
-
-    [ClientRPC]
-    public void UpdateReadyOnClients(ulong clientId)
-    {
-        if (!IsHost)
-        {
-            if (readyPlayers.Contains(clientId))
-            {
-                readyPlayers.Remove(clientId);
-            }
-            else
-            {
-                readyPlayers.Add(clientId);
-            }
-        }
-
-        // UI
-        canvas.updateConnectedPanel(readyPlayers);
     }
 
 
@@ -209,6 +195,10 @@ public class LobbyManager : NetworkedBehaviour
     // Server switches the Scene based on Dropdown selection
     public void SwitchScene()
     {
+        // Remove callbacks
+        NetworkingManager.Singleton.OnClientConnectedCallback -= updateConnections;
+        NetworkingManager.Singleton.OnClientDisconnectCallback -= updateConnections;
+
         NetworkSceneManager.SwitchScene(canvas.levelDropdown.captionText.text);
     }
 }
