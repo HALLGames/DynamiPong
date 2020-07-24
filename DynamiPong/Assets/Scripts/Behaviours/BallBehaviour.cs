@@ -10,6 +10,10 @@ public class BallBehaviour : NetworkedBehaviour
 
     protected Rigidbody2D body;
 
+    public AudioSource wallHit;
+    public AudioSource paddleHit;
+
+
     /// <summary>
     /// Does NOT get called by Unity
     /// Call this method with base.Start() in the method "new void Start()"
@@ -18,6 +22,17 @@ public class BallBehaviour : NetworkedBehaviour
     {
         // Get body
         body = GetComponent<Rigidbody2D>();
+
+        // initializes the wall hit and paddle hit sound effects
+        wallHit = gameObject.AddComponent<AudioSource>();
+        AudioClip wallClip;
+        wallClip = (AudioClip)Resources.Load("Sound/WallHit");
+        wallHit.clip = wallClip;
+
+        paddleHit = gameObject.AddComponent<AudioSource>();
+        AudioClip paddleClip;
+        paddleClip = (AudioClip)Resources.Load("Sound/PaddleHit");
+        paddleHit.clip = paddleClip;
 
         launchBall();
     }
@@ -67,9 +82,16 @@ public class BallBehaviour : NetworkedBehaviour
     /// <param name="collision"></param>
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
+
+        if (collision.transform.tag == "Paddle")
+        {
+            paddleHit.Play();
+        }
+
         // Prevent sticking to the wall
         if (collision.transform.tag == "Wall")
         {
+            wallHit.Play();
             if (body.velocity.y > 0 && body.velocity.y < 0.25f)
             {
                 // Hit top wall with low velocity - launch down

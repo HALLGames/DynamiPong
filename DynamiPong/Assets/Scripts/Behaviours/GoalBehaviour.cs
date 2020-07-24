@@ -7,10 +7,17 @@ public class GoalBehaviour : MonoBehaviour
     protected bool onLeft;
     protected GameManagerBehaviour manager;
 
+    public AudioSource goalHit;
+
     // Does NOT get called by Unity
     // Call this method with base.Start() in the method "new void Start()"
     protected void Start()
     {
+        goalHit = gameObject.AddComponent<AudioSource>();
+        AudioClip goalClip;
+        goalClip = (AudioClip)Resources.Load("Sound/GoalHit");
+        goalHit.clip = goalClip;
+
         manager = FindObjectOfType<GameManagerBehaviour>();
         onLeft = transform.position.x < 0;
     }
@@ -20,6 +27,8 @@ public class GoalBehaviour : MonoBehaviour
     {
         if (collision.tag == "Ball")
         {
+            //plays goal hit sound
+            goalHit.Play();
             // Hit by ball
             manager.scoreGoal(onLeft);
         }
