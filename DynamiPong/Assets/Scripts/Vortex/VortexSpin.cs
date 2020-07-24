@@ -5,11 +5,12 @@ using UnityEngine;
 public class VortexSpin : MonoBehaviour
 {
     PointEffector2D pointEffector;
+    
     ParticleSystem particleSystem;
     SpriteRenderer spriteRenderer;
     public Sprite oldSprite;
     public Sprite newSprite; 
-
+     
     // Start called at the start
     protected void Start()
     {
@@ -29,7 +30,9 @@ public class VortexSpin : MonoBehaviour
         {
             // Small chance to enable boost
             pointEffector.forceMagnitude *= -1;
-            particleSystem.startSpeed *= -1;
+            var ps = particleSystem.main;
+            ps.startSpeedMultiplier *= -1;
+
             ChangeSprite();
         }
     }
