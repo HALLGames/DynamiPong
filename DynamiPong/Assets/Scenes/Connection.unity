@@ -1160,9 +1160,8 @@ MonoBehaviour:
     RegisteredScenes:
     - Connection
     - Lobby
-    - TemplateLevel
+    - Standard Pong
     - Vortex
-    - ExampleLevel
     - PowerupPong
     - Dodgeball
     AllowRuntimeSceneChanges: 0
@@ -1199,6 +1198,7 @@ MonoBehaviour:
       PlayerPrefab: 0
     - Prefab: {fileID: 1462674454641740157, guid: b57fa3c77e543e446bdd884243430dd0,
         type: 3}
+      PlayerPrefab: 0
     - Prefab: {fileID: 2747698423415181518, guid: c3477585fad8e9e44bdf3fe25bd2b994,
         type: 3}
       PlayerPrefab: 0

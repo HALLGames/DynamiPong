@@ -20,8 +20,7 @@ public class Network : MonoBehaviour
     }
 
     public void OnConnectClick()
-    {
-        canvas.disableUI();
+    { 
         if(canvas.hasValidPortInput())
         {
             // Change transport
@@ -32,6 +31,7 @@ public class Network : MonoBehaviour
         {
             return;
         }
+        canvas.disableUI();
 
         if (Application.isEditor)
         {
@@ -71,7 +71,7 @@ public class Network : MonoBehaviour
         }
     }
 
-    private void startClient()
+    public void startClient()
     {
         // Add name to Connection Data
         byte[] connectionData = System.Text.Encoding.Default.GetBytes(canvas.nameField.text);
@@ -80,19 +80,22 @@ public class Network : MonoBehaviour
         NetworkingManager.Singleton.StartClient();
     }
 
-    private void startServer()
+    public void startServer()
     {
         NetworkingManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
         NetworkingManager.Singleton.StartServer();
     }
 
-    private void startHost()
+    public void startHost()
     {
         NetworkingManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
         NetworkingManager.Singleton.StartHost();
 
         // Add name because approval is not called for the host
-        addConnectedPlayer(NetworkingManager.Singleton.LocalClientId, canvas.nameField.text);
+        if (canvas != null)
+        {
+            addConnectedPlayer(NetworkingManager.Singleton.LocalClientId, canvas.nameField.text);
+        }
     }
 
     // Gets approval and puts name into the list
@@ -111,7 +114,7 @@ public class Network : MonoBehaviour
     }
 
     // Puts name in dictionary with clientId as the key
-    private void addConnectedPlayer(ulong clientId, string name)
+    public void addConnectedPlayer(ulong clientId, string name)
     {
         // If name is empty, call them "PlayerX", where X is the player count
         if (name == "")
@@ -121,14 +124,14 @@ public class Network : MonoBehaviour
 
         // If names are the same, add "(n)" after it, n increments.
         string newName = name;
-        int i = 0;
+        int i = 1;
         while (connectedPlayerNames.ContainsValue(newName))
         {
             newName = name + " (" + i + ")";
             i++;
         }
 
-        connectedPlayerNames.Add(clientId, name);
+        connectedPlayerNames.Add(clientId, newName);
     }
 
     /// <summary>

@@ -165,7 +165,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 64277342}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d37f14c6030cb2047911e7dcea051b01, type: 3}
+  m_Script: {fileID: 11500000, guid: f7690a7ad77df6d46a1af2a66960bd0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &64277345
@@ -643,7 +643,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 750897421}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0af9ae33adbc34a4a8aa8f30154b8610, type: 3}
+  m_Script: {fileID: 11500000, guid: 64aeb901f1e150b45b1e3acb836a9e15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   leftScoreText: {fileID: 1592251678}
@@ -940,7 +940,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Template
+  m_Text: Pong
 --- !u!222 &2063165438
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -977,7 +977,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 162101286820583949}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91ad2f68799910648be510338d97af21, type: 3}
+  m_Script: {fileID: 11500000, guid: 28dc7d33d7809bc44bd04005100dff00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!61 &773964131251561172
@@ -1231,7 +1231,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3659848008062790799}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91ad2f68799910648be510338d97af21, type: 3}
+  m_Script: {fileID: 11500000, guid: 28dc7d33d7809bc44bd04005100dff00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!61 &4199657622212138070

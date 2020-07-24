@@ -948,13 +948,11 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: TemplateLevel
+    - m_Text: Standard Pong
       m_Image: {fileID: 0}
     - m_Text: Vortex
       m_Image: {fileID: 0}
-    - m_Text: ExampleLevel
-      m_Image: {fileID: 0}
-    - m_Text: PowerupPong
+    - m_Text: Powerup Mania
       m_Image: {fileID: 0}
     - m_Text: Dodgeball
       m_Image: {fileID: 0}
@@ -1837,7 +1835,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: TemplateLevel
+  m_Text: Standard Pong
 --- !u!222 &1293429896
 CanvasRenderer:
   m_ObjectHideFlags: 0
