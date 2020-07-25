@@ -6,23 +6,23 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: cc3095e53bda0a74181ff8e3384266c4
+  - enabled: 1
     path: Assets/Scenes/Connection.unity
     guid: 6b6cf8a890a9de5499908d35f80eb795
   - enabled: 1
     path: Assets/Scenes/Lobby.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
-    path: Assets/Scenes/Levels/PowerupPong.unity
-    guid: 0cf4a7689bdad78479f5920a13b9046e
-  - enabled: 1
-    path: Assets/Scenes/Levels/ExampleLevel.unity
+    path: Assets/Scenes/Levels/Standard Pong.unity
     guid: eba0219f05303dd48b82b069df430a3e
-  - enabled: 1
-    path: Assets/Scenes/Levels/Level2.unity
-    guid: 91cfc326434e52244af9ab664ef875eb
   - enabled: 1
     path: Assets/Scenes/Levels/Vortex.unity
     guid: 4cc505a391a265548b5a543c62fcf699
+  - enabled: 1
+    path: Assets/Scenes/Levels/Powerup Mania.unity
+    guid: 0cf4a7689bdad78479f5920a13b9046e
   - enabled: 1
     path: Assets/Scenes/Levels/Dodgeball.unity
     guid: 015a9490f378ba34391659d029134494

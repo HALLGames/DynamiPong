@@ -11,8 +11,11 @@ public class PowerupPongPaddle : PaddleBehaviour
 
     private PowerupPongGameManager gameManager;
     private PowerupPongPowerupManager powerupManager;
+
     protected PowerupPongPowerupManager.PowerupType power;
     protected bool onLeft;
+    private float baseSpeed;
+    private Vector3 baseScale;
 
     private PowerupPongCanvas levelCanvas;
 
@@ -26,6 +29,8 @@ public class PowerupPongPaddle : PaddleBehaviour
         powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
 
         power = PowerupPongPowerupManager.PowerupType.None;
+        baseSpeed = speed;
+        baseScale = transform.localScale;
     }
 
     // Update is called once per frame
@@ -235,14 +240,17 @@ public class PowerupPongPaddle : PaddleBehaviour
 
     public IEnumerator ChangePaddleSpeed(float modifier, int duration)
     {
-        float oldSpeed = speed;
         speed *= modifier;
-        yield return new WaitForSeconds(duration);
+        if (modifier > 1)
+        {
+            GetComponent<TrailRenderer>().emitting = true;
+        }
         // If duration < 0, effect lasts forever
         if (duration >= 0)
         {
-            
-            speed = oldSpeed;
+            yield return new WaitForSeconds(duration);
+            speed = baseSpeed;
+            GetComponent<TrailRenderer>().emitting = false;
         }
         yield break;
     }
@@ -258,13 +266,12 @@ public class PowerupPongPaddle : PaddleBehaviour
 
     public IEnumerator ChangePaddleScale(float modifier, int duration)
     {
-        Vector3 oldScale = transform.localScale;
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * modifier, transform.localScale.z);
-        yield return new WaitForSeconds(duration);
         // If duration < 0, effect lasts forever
         if (duration >= 0)
         {
-            transform.localScale = oldScale;
+            yield return new WaitForSeconds(duration);
+            transform.localScale = baseScale;
         }
         yield break;
     }
