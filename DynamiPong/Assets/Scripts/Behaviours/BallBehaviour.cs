@@ -23,18 +23,20 @@ public class BallBehaviour : NetworkedBehaviour
         // Get body
         body = GetComponent<Rigidbody2D>();
 
-        // initializes the wall hit and paddle hit sound effects
-        wallHit = gameObject.AddComponent<AudioSource>();
-        AudioClip wallClip;
-        wallClip = (AudioClip)Resources.Load("Sound/WallHit");
-        wallHit.clip = wallClip;
-
-        paddleHit = gameObject.AddComponent<AudioSource>();
-        AudioClip paddleClip;
-        paddleClip = (AudioClip)Resources.Load("Sound/PaddleHit");
-        paddleHit.clip = paddleClip;
+        initSound();
 
         launchBall();
+    }
+
+    protected virtual void initSound()
+    {
+        // initializes the wall hit and paddle hit sound effects
+        wallHit = gameObject.AddComponent<AudioSource>();
+        wallHit.clip = (AudioClip)Resources.Load("Sound/WallHit");
+      
+
+        paddleHit = gameObject.AddComponent<AudioSource>();
+        paddleHit.clip = (AudioClip)Resources.Load("Sound/PaddleHit");
     }
 
     /// <summary>
