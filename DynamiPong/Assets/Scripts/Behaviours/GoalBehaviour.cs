@@ -13,13 +13,17 @@ public class GoalBehaviour : MonoBehaviour
     // Call this method with base.Start() in the method "new void Start()"
     protected void Start()
     {
-        goalHit = gameObject.AddComponent<AudioSource>();
-        AudioClip goalClip;
-        goalClip = (AudioClip)Resources.Load("Sound/GoalHit");
-        goalHit.clip = goalClip;
+        initSound();
 
         manager = FindObjectOfType<GameManagerBehaviour>();
         onLeft = transform.position.x < 0;
+    }
+
+    protected virtual void initSound()
+    {
+        // initializes the goal hit and paddle hit sound effects
+        goalHit = gameObject.AddComponent<AudioSource>();
+        goalHit.clip = (AudioClip)Resources.Load("Sound/GoalHit");
     }
 
     // Override this method for custom the goal trigger
