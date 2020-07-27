@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
 using System.Dynamic;
+using MLAPI.Messaging;
 
 public class PowerupPongPowerup : NetworkedBehaviour
 {
@@ -19,16 +20,23 @@ public class PowerupPongPowerup : NetworkedBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
+    }
+
+    public override void NetworkStart()
+    {
+        // Despawn after 8 seconds
         Destroy(gameObject, 8);
+
+        // Find objects
         powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
         renderer = GetComponent<SpriteRenderer>();
 
-        setRandomPower();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
+        if (IsServer)
+        {
+            setRandomPower();
+            InvokeClientRpcOnEveryone(UpdatePowerOnClient, power);
+        }
     }
 
     private void setRandomPower()
@@ -90,19 +98,25 @@ public class PowerupPongPowerup : NetworkedBehaviour
         renderer.sprite = powerupManager.getSprite(power);
     }
 
+    [ClientRPC]
+    public void UpdatePowerOnClient(PowerupPongPowerupManager.PowerupType power)
+    {
+        setPower(power);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Ball")
+        if (IsServer)
         {
-            if (IsServer)
+            if (collision.tag == "Ball")
             {
                 PowerupPongPaddle lastTouchedPaddle = collision.GetComponent<PowerupPongBall>().lastTouchedPaddle;
                 if (lastTouchedPaddle != null)
                 {
-                    if (lastTouchedPaddle.givePowerup(this))
+                    if (lastTouchedPaddle.givePowerup(power))
                     {
                         // If powerup was given to paddle, deactivate powerup object
-                        // GetComponent<NetworkedObject>().UnSpawn();
+                        GetComponent<NetworkedObject>().UnSpawn();
                         Destroy(gameObject);
                     }
                 }

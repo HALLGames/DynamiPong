@@ -7,6 +7,7 @@ using MLAPI.Messaging;
 public class PowerupPongBall : BallBehaviour
 {
     protected new SpriteRenderer renderer;
+    protected TrailRenderer trail;
     private float baseSpeed;
 
     [HideInInspector]
@@ -18,6 +19,8 @@ public class PowerupPongBall : BallBehaviour
         base.Start();
 
         renderer = GetComponent<SpriteRenderer>();
+        trail = GetComponent<TrailRenderer>();
+
         renderer.color = Color.white;
         lastTouchedPaddle = null;
         baseSpeed = speed;
@@ -63,10 +66,7 @@ public class PowerupPongBall : BallBehaviour
                 renderer.color = collision.transform.GetComponent<SpriteRenderer>().color;
                 lastTouchedPaddle = collision.transform.GetComponent<PowerupPongPaddle>();
 
-                if (IsServer)
-                {
-                    InvokeClientRpcOnEveryone(UpdateColorOnClients, renderer.color);
-                }
+                InvokeClientRpcOnEveryone(UpdateColorOnClients, renderer.color);
             }
         }
     }
@@ -82,18 +82,21 @@ public class PowerupPongBall : BallBehaviour
         speed *= modifier;
         if (modifier > 1)
         {
-            GetComponent<TrailRenderer>().emitting = true;
+            InvokeClientRpcOnEveryone(ToggleTrailOnClient, true);
         }
         // If duration < 0, effect lasts forever
         if (duration >= 0)
         {
             yield return new WaitForSeconds(duration);
             speed = baseSpeed;
-            if (gameObject != null)
-            {
-                GetComponent<TrailRenderer>().emitting = false;
-            }
+            InvokeClientRpcOnEveryone(ToggleTrailOnClient, false);
         }
+    }
+
+    [ClientRPC]
+    public void ToggleTrailOnClient(bool emitting)
+    {
+        trail.emitting = emitting;
     }
 
     public void reverse()
