@@ -1162,7 +1162,7 @@ MonoBehaviour:
     - Lobby
     - Standard Pong
     - Vortex
-    - PowerupPong
+    - Powerup Mania
     - Dodgeball
     AllowRuntimeSceneChanges: 0
     NetworkedPrefabs:

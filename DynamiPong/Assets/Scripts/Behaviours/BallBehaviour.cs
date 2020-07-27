@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
@@ -13,6 +13,11 @@ public class BallBehaviour : NetworkedBehaviour
     public AudioSource wallHit;
     public AudioSource paddleHit;
 
+    public override void NetworkStart()
+    {
+        // Get body
+        body = GetComponent<Rigidbody2D>();
+    }
 
     /// <summary>
     /// Does NOT get called by Unity
@@ -30,6 +35,7 @@ public class BallBehaviour : NetworkedBehaviour
 
     protected virtual void initSound()
     {
+
         // initializes the wall hit and paddle hit sound effects
         wallHit = gameObject.AddComponent<AudioSource>();
         wallHit.clip = (AudioClip)Resources.Load("Sound/WallHit");

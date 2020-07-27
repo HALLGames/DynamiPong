@@ -144,9 +144,12 @@ public class GameManagerBehaviour : NetworkedBehaviour
         ball.GetComponent<NetworkedObject>().Spawn();
     }
 
-    // If there is a ball, destroy it and create a new one
-    public void respawnBall()
+   /// <summary>
+   /// Override this method to customize the respawning of balls
+   /// </summary>
+    public virtual void respawnBall()
     {
+        // If there is a ball, destroy it and create a new one
         if (ball != null)
         {
             ball.GetComponent<NetworkedObject>().UnSpawn();
