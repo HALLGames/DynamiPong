@@ -6,7 +6,7 @@ public class VortexSpin : MonoBehaviour
 {
     PointEffector2D pointEffector;
     
-    ParticleSystem particleSystem;
+    ParticleSystem particles;
     SpriteRenderer spriteRenderer;
     public Sprite oldSprite;
     public Sprite newSprite; 
@@ -15,7 +15,7 @@ public class VortexSpin : MonoBehaviour
     protected void Start()
     {
         pointEffector = GetComponent<PointEffector2D>();
-        particleSystem = GetComponent<ParticleSystem>();
+        particles = GetComponent<ParticleSystem>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         //oldSprite = GetComponent<Sprite>();
     }
@@ -30,7 +30,7 @@ public class VortexSpin : MonoBehaviour
         {
             // Small chance to enable boost
             pointEffector.forceMagnitude *= -1;
-            var ps = particleSystem.main;
+            var ps = particles.main;
             ps.startSpeedMultiplier *= -1;
 
             ChangeSprite();
