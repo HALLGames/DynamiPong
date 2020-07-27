@@ -53,24 +53,12 @@ public class DodgeballBall : BallBehaviour
     protected override void OnCollisionEnter2D(Collision2D collision)
     {
         base.OnCollisionEnter2D(collision);
+        if (collision.transform.tag == "Goal")
+        {
+            wallHit.Play();
+        }
     }
-    // Returns a pseudo-random Vector2 with a magnitude of 1
 
-    private Vector2 randomNormalizedVelocity()
-    {
-        Vector2 newVelocity;
-        // Pseudo-random starting direction
-        // x-dir is always either 1 or -1, y-dir is a float between 1 and -1
-        if (Random.value > 0.5)
-        {
-            newVelocity = new Vector2(1f, Random.Range(-1f, 1f));
-        }
-        else
-        {
-            newVelocity = new Vector2(-1f, Random.Range(-1f, 1f));
-        }
-        return newVelocity.normalized;
-    }
     public void increaseSpeed()
     {
         speed += 1;

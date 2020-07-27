@@ -11,10 +11,14 @@ public class DodgeballPaddle : PaddleBehaviour
 
     protected GameManagerBehaviour manager;
 
+    public AudioSource goalHit;
+
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Ball")
         {
+            //plays goal hit sound
+            goalHit.Play();
             // Hit by ball
             manager.scoreGoal(onLeft);
         }
@@ -22,6 +26,11 @@ public class DodgeballPaddle : PaddleBehaviour
     // Start is called before the first frame update
     new void Start()
     {
+        goalHit = gameObject.AddComponent<AudioSource>();
+        AudioClip goalClip;
+        goalClip = (AudioClip)Resources.Load("Sound/GoalHit");
+        goalHit.clip = goalClip;
+
         onLeft = transform.position.x < 0;
         manager = FindObjectOfType<GameManagerBehaviour>();
         base.Start();

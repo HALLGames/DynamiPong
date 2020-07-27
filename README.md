@@ -50,8 +50,10 @@ Open Unity Hub, click "Add", then select the folder "DynamiPong/DynamiPong".
   - Ex. A level called Level2 will have: Level2Ball, Level2Paddle, Level2Goal, etc.
 - Open each script in Visual Studio. 
 - Change each file's Class name to their file name.
+  - DO NOT use VS's rename command. It will also rename the actual template scripts and make a big mess.
   - Ex. Change ```public Class TemplatePaddle : PaddleBehaviour``` to ```public Class LevelNamePaddle : PaddleBehaviour``` 
 - In your level scene, go through every game object and replace the scripts with the new ones that you made.
+- Reattach the UI fields for the LevelCanvas, which found under the Canvas game object.
 - Open the Prefabs folder (Assets/Prefabs) and duplicate the TemplateLevel folder.
   - Rename the prefabs with the same name scheme
   - Change the Prefab Hash Generator in the NetworkObject component to their name
@@ -83,4 +85,5 @@ Open Unity Hub, click "Add", then select the folder "DynamiPong/DynamiPong".
   - Ex. Sprites for a level called "Level2" should be put in the folder Assets/Sprites/Level2
   - If you want to have slightly altered common assets, copy them to the new folder.
 - When you copy prefabs with NetworkObjects, remember to change the Prefab Hash Generator, otherwise MLAPI gets mad.
-- One of the most important methods to override is getPrefabs() in the GameManager, since it specifies which prefabs are used.
+- One of the most important methods to override is getPrefabs() in the GameManager, since it specifies which prefabs are used. 
+  - This is already done in the Template, but you still need to rename the classes and strings.
