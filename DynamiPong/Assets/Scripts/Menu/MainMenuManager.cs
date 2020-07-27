@@ -12,6 +12,9 @@ public class MainMenuManager : MonoBehaviour
     {
         mainMenuCanvas = FindObjectOfType<MainMenuCanvas>();
         mainMenuCanvas.creditsPanel.gameObject.SetActive(false);
+
+        // Keep BackgroundMusic persistent
+        // DontDestroyOnLoad(GameObject.FindGameObjectWithTag("BackgroundMusic"));
     }
 
     // Update is called once per frame

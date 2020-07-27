@@ -11,6 +11,7 @@ TagManager:
   - BotFlag
   - Network
   - Powerup
+  - BackgroundMusic
   layers:
   - Default
   - TransparentFX
