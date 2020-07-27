@@ -13,6 +13,11 @@ public class BallBehaviour : NetworkedBehaviour
     public AudioSource wallHit;
     public AudioSource paddleHit;
 
+    public override void NetworkStart()
+    {
+        // Get body
+        body = GetComponent<Rigidbody2D>();
+    }
 
     /// <summary>
     /// Does NOT get called by Unity
@@ -20,9 +25,6 @@ public class BallBehaviour : NetworkedBehaviour
     /// </summary>
     protected void Start()
     {
-        // Get body
-        body = GetComponent<Rigidbody2D>();
-
         // initializes the wall hit and paddle hit sound effects
         wallHit = gameObject.AddComponent<AudioSource>();
         AudioClip wallClip;

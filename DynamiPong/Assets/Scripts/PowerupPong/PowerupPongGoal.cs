@@ -6,6 +6,9 @@ public class PowerupPongGoal : GoalBehaviour
     new void Start()
     {
         base.Start();
+
+        // Color based on side
+        GetComponent<SpriteRenderer>().color = onLeft ? Color.green : Color.red;
     } 
 }
 

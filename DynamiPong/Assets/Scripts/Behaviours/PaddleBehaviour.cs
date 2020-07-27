@@ -17,6 +17,11 @@ public class PaddleBehaviour : NetworkedBehaviour
     protected bool isBot = false;
     protected BallBehaviour botBall = null;
 
+    public override void NetworkStart()
+    {
+        
+    }
+
     /// <summary>
     /// Does NOT get called by Unity
     /// Call this method with base.Start() in the method "new void Start()"
@@ -140,7 +145,10 @@ public class PaddleBehaviour : NetworkedBehaviour
         if (!IsOwner)
         {
             transform.position = position;
-            body.velocity = velocity;
+            if (body != null)
+            {
+                body.velocity = velocity;
+            }
         }
     }
 
@@ -149,6 +157,9 @@ public class PaddleBehaviour : NetworkedBehaviour
     public void UpdateBotMovementOnClient(Vector3 position, Vector2 velocity)
     {
         transform.position = position;
-        body.velocity = velocity;
+        if (body != null)
+        {
+            body.velocity = velocity;
+        }
     }
 }

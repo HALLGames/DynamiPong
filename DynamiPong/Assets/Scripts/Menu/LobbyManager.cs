@@ -34,11 +34,9 @@ public class LobbyManager : NetworkedBehaviour
             if (IsServer)
         {
             // Call callbacks to track connections
-            NetworkingManager.Singleton.OnClientConnectedCallback += updateConnections;
-            NetworkingManager.Singleton.OnClientDisconnectCallback += updateConnections;
-        }
-
-        
+            NetworkingManager.Singleton.OnClientConnectedCallback += ConnectionCallbackOnServer;
+            NetworkingManager.Singleton.OnClientDisconnectCallback += ConnectionCallbackOnServer;
+        } 
     }
 
     //--------------------------------------------
@@ -65,11 +63,6 @@ public class LobbyManager : NetworkedBehaviour
     // Disconnect Button Clicked
     public void OnDisconnectButton()
     {
-        if (NetworkingManager.Singleton.IsConnectedClient)
-        {
-            // Disconnect ourselves
-            NetworkingManager.Singleton.DisconnectClient(NetworkingManager.Singleton.LocalClientId);
-        }
         // Destroy old network
         Destroy(GameObject.FindGameObjectWithTag("Network"));
         // Go back
@@ -92,7 +85,7 @@ public class LobbyManager : NetworkedBehaviour
         }
 
         canvas.updateConnectedPanel(readyPlayers);
-        InvokeClientRpcOnEveryone(UpdateConnectedOnClients, connected, canvas.playersText.text);
+        InvokeClientRpcOnEveryone(UpdateConnectedOnClient, connected, canvas.playersText.text);
 
         if (readyPlayers.Count >= 2)
         {
@@ -110,7 +103,7 @@ public class LobbyManager : NetworkedBehaviour
     }
 
     // Server-Side, called by connect/disconnect callbacks
-    public void updateConnections(ulong clientId)
+    public void ConnectionCallbackOnServer(ulong clientId)
     {
         connected = NetworkingManager.Singleton.ConnectedClientsList.Count;
 
@@ -120,12 +113,14 @@ public class LobbyManager : NetworkedBehaviour
             readyPlayers.Remove(clientId);
         }
 
+        // UI
+        InvokeClientRpcOnEveryone(SetDropdownValueOnClient, canvas.levelDropdown.value);
         canvas.updateConnectedPanel(readyPlayers);
-        InvokeClientRpcOnEveryone(UpdateConnectedOnClients, connected, canvas.playersText.text);
+        InvokeClientRpcOnEveryone(UpdateConnectedOnClient, connected, canvas.playersText.text);
     }   
 
     [ClientRPC]
-    public void UpdateConnectedOnClients(int connected, string text)
+    public void UpdateConnectedOnClient(int connected, string text)
     {
         this.connected = connected;
 
@@ -139,11 +134,11 @@ public class LobbyManager : NetworkedBehaviour
     [ServerRPC(RequireOwnership = false)]
     public void StartBotModeOnServer()
     {
+        // Create persistent bot flag to be found by a GameManager
         GameObject botFlag = new GameObject();
         botFlag.tag = "BotFlag";
         DontDestroyOnLoad(botFlag);
 
-        // Start Game
         startGame();
     }
 
@@ -170,8 +165,7 @@ public class LobbyManager : NetworkedBehaviour
     {
         canvas.levelDropdown.SetValueWithoutNotify(value);
 
-        // TODO: Set level preview based on dropdown value
-        // canvas.levelPreview = 
+        canvas.updateLevelPreview();
     }
 
     // Server recieves new dropdown value from a client
@@ -196,8 +190,8 @@ public class LobbyManager : NetworkedBehaviour
     public void SwitchScene()
     {
         // Remove callbacks
-        NetworkingManager.Singleton.OnClientConnectedCallback -= updateConnections;
-        NetworkingManager.Singleton.OnClientDisconnectCallback -= updateConnections;
+        NetworkingManager.Singleton.OnClientConnectedCallback -= ConnectionCallbackOnServer;
+        NetworkingManager.Singleton.OnClientDisconnectCallback -= ConnectionCallbackOnServer;
 
         NetworkSceneManager.SwitchScene(canvas.levelDropdown.captionText.text);
     }

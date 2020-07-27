@@ -1,9 +1,9 @@
-﻿using MLAPI;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MLAPI;
 
-public class PowerupPongPowerupManager : MonoBehaviour
+public class PowerupPongPowerupManager : NetworkedBehaviour
 {
     public enum PowerupType { None, BallSpeedDown, BallSpeedUp, PaddleSpeedDown, PaddleSpeedUp, BallReverse, 
         WorldReverse, PaddleExpand, PaddleShrink};
@@ -25,33 +25,32 @@ public class PowerupPongPowerupManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        powerupPrefab = Network.GetPrefab<PowerupPongPowerup>("PowerupPongPowerup");
-        powerupObjects = new GameObject("Powerups").transform;
-        InvokeRepeating("spawnPowerup", 2, 8);
-        InvokeRepeating("spawnPowerup", 6, 8);
+        
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void NetworkStart()
     {
+        powerupPrefab = Network.GetPrefab<PowerupPongPowerup>("PowerupPongPowerup");
+        powerupObjects = new GameObject("Powerups").transform;
         
+        if (IsServer)
+        {
+            // Repeated spawning powerups
+            InvokeRepeating("spawnPowerup", 2, 8);
+            InvokeRepeating("spawnPowerup", 6, 8);
+        }
     }
 
     private void spawnPowerup()
     {
-        PowerupPongPowerup powerup = powerupPrefab;
-
         // Choose random spawnpoint location
         Transform spawnpoint;
         int spawnIndex = new System.Random().Next(0, powerupSpawnpoints.Length - 1);
         spawnpoint = powerupSpawnpoints[spawnIndex];
 
         // Spawn
-        if (powerup.power != PowerupType.None)
-        {
-            Instantiate(powerup, spawnpoint.position, Quaternion.identity, powerupObjects);
-            // powerup.GetComponent<NetworkedObject>().Spawn();
-        }
+        PowerupPongPowerup powerup = Instantiate(powerupPrefab, spawnpoint.position, Quaternion.identity, powerupObjects);
+        powerup.GetComponent<NetworkedObject>().Spawn();
     }
 
     public Sprite getSprite(PowerupType power)
