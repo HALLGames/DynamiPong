@@ -90,10 +90,11 @@ public class BallBehaviour : NetworkedBehaviour
             paddleHit.Play();
         }
 
-        // Prevent sticking to the wall
         if (collision.transform.tag == "Wall")
         {
             wallHit.Play();
+
+            // Prevent sticking to the wall
             if (body.velocity.y > 0 && body.velocity.y < 0.25f)
             {
                 // Hit top wall with low velocity - launch down

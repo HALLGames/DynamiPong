@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
 using MLAPI.SceneManagement;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using MLAPI.Messaging;
-using MLAPI.Transports.UNET;
 using MLAPI.NetworkedVar;
 
 public class GameManagerBehaviour : NetworkedBehaviour
