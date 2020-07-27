@@ -17,8 +17,13 @@ public class PowerupPongCanvas : LevelCanvasBehaviour
 
         powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
 
+        // Reset powerup images
         clearPowerupImage(true);
         clearPowerupImage(false);
+
+        // Assign score colors
+        leftScoreText.color = Color.green;
+        rightScoreText.color = Color.red;
     }
 
     public void clearPowerupImage(bool onLeft)

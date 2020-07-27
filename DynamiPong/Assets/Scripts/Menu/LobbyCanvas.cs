@@ -133,22 +133,30 @@ public class LobbyCanvas : MonoBehaviour
         }
     }
 
-    // Not in use
-    public void initDropdown()
+    public void updateLevelPreview()
     {
-        string directoryPath = "Assets/Scenes/Levels/";
-        string[] files = Directory.GetFiles(directoryPath);
-        for (int i = 0; i < files.Length; i++)
-        {
-            string fileName = files[i];
-            fileName = fileName.Substring(directoryPath.Length);
-            string[] fileSplit = fileName.Split('.');
-            if (fileSplit[1] == "unity")
-            {
-                fileName = fileName.Split('.')[0];
-                if (fileName != "TemplateLevel" || fileName != "ExampleLevel")
-                    levelDropdown.options.Add(new Dropdown.OptionData(fileName));
-            }
-        }   
+        // TODO:
+        // levelPreview.sprite = 
     }
+
+
+    // Not in use
+    // Auto-generate level names from Scenes/Levels path and put them in the dropdown 
+    //public void initDropdown()
+    //{
+    //    string directoryPath = "Assets/Scenes/Levels/";
+    //    string[] files = Directory.GetFiles(directoryPath);
+    //    for (int i = 0; i < files.Length; i++)
+    //    {
+    //        string fileName = files[i];
+    //        fileName = fileName.Substring(directoryPath.Length);
+    //        string[] fileSplit = fileName.Split('.');
+    //        if (fileSplit[1] == "unity")
+    //        {
+    //            fileName = fileName.Split('.')[0];
+    //            if (fileName != "TemplateLevel" || fileName != "ExampleLevel")
+    //                levelDropdown.options.Add(new Dropdown.OptionData(fileName));
+    //        }
+    //    }   
+    //}
 }

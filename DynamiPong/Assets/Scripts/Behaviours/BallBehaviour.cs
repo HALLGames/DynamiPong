@@ -10,16 +10,21 @@ public class BallBehaviour : NetworkedBehaviour
 
     protected Rigidbody2D body;
 
+    public override void NetworkStart()
+    {
+        // Get body
+        body = GetComponent<Rigidbody2D>();
+
+        launchBall();
+    }
+
     /// <summary>
     /// Does NOT get called by Unity
     /// Call this method with base.Start() in the method "new void Start()"
     /// </summary>
     protected void Start()
     {
-        // Get body
-        body = GetComponent<Rigidbody2D>();
-
-        launchBall();
+        
     }
 
     /// <summary>
