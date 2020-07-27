@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
+using MLAPI.SceneManagement;
 
 public class PowerupPongPaddle : PaddleBehaviour
 {
@@ -19,15 +20,17 @@ public class PowerupPongPaddle : PaddleBehaviour
 
     private PowerupPongCanvas levelCanvas;
 
+    public override void NetworkStart()
+    {
+        base.NetworkStart();
+    }
+
     // Start is called before the first frame update
     new void Start()
     {
         base.Start();
 
-        levelCanvas = FindObjectOfType<PowerupPongCanvas>();
-        gameManager = FindObjectOfType<PowerupPongGameManager>();
-        powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
-
+        // Init local vars
         power = PowerupPongPowerupManager.PowerupType.None;
         baseSpeed = speed;
         baseScale = transform.localScale;
@@ -37,6 +40,11 @@ public class PowerupPongPaddle : PaddleBehaviour
     new void Update()
     {
         base.Update();
+
+        if (levelCanvas == null || gameManager == null || powerupManager == null)
+        {
+            initManagers();
+        }
 
         if (IsOwner)
         {
@@ -49,6 +57,14 @@ public class PowerupPongPaddle : PaddleBehaviour
                 }
             }
         }
+    }
+
+    public void initManagers()
+    {
+        // Init managers
+        levelCanvas = FindObjectOfType<PowerupPongCanvas>();
+        gameManager = FindObjectOfType<PowerupPongGameManager>();
+        powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
     }
 
     // Custom player movement
@@ -65,47 +81,72 @@ public class PowerupPongPaddle : PaddleBehaviour
         if (power != PowerupPongPowerupManager.PowerupType.None)
         {
             // Use powerup in 3 seconds
-            Invoke("usePowerup",3);
+            if (!IsInvoking())
+            {
+                Invoke("usePowerup", 3);
+            }  
+        }
+
+        if (botBall != null)
+        {
+            if (transform.position.x - botBall.transform.position.x < 1)
+            {
+                // Faster when very close to the ball
+                body.velocity *= 1.5f;
+            }
         }
     }
 
     // Custom initialization
     public override void init(bool onLeft)
     {
+        // Init position
+        leftPosition = new Vector3(-6, 0, 0);
+        rightPosition = new Vector3(6, 0, 0);
         base.init(onLeft);
 
+        // Init Color, onLeft
         Color color = onLeft ? leftColor : rightColor;
         GetComponent<SpriteRenderer>().color = color;
-        InvokeClientRpcOnEveryone(UpdateColorOnClient, color);
         this.onLeft = onLeft;
+        InvokeClientRpcOnEveryone(UpdateVarsOnClient, color, onLeft);
     }
 
     public override void setupBot()
     {
+        // Init position
+        leftPosition = new Vector3(-6, 0, 0);
+        rightPosition = new Vector3(6, 0, 0);
         base.setupBot();
 
-        onLeft = false;
+        // Init Color, onLeft
         Color color = rightColor;
         GetComponent<SpriteRenderer>().color = color;
-        InvokeClientRpcOnEveryone(UpdateColorOnClient, color);
+        onLeft = false;
+        InvokeClientRpcOnEveryone(UpdateVarsOnClient, color, onLeft);
     }
 
     [ClientRPC]
-    public void UpdateColorOnClient(Color color)
+    public void UpdateVarsOnClient(Color color, bool onLeft)
     {
         GetComponent<SpriteRenderer>().color = color;
+        this.onLeft = onLeft;
     }
 
+    //---------------------------------------------
+    // Powerup System
+    //---------------------------------------------
+
     /// <summary>
-    /// Gives the paddle the powerup
+    /// Gives the paddle the powerup - Server-side
     /// </summary>
-    /// <param name="powerup"></param>
+    /// <param name="powerup">Powerup object to give the paddle</param>
     /// <returns>False if paddle already has a powerup. True if powerup was granted.</returns>
-    public bool givePowerup(PowerupPongPowerup powerup)
+    public bool givePowerup(PowerupPongPowerupManager.PowerupType power)
     {
-        if (powerup != null && power == PowerupPongPowerupManager.PowerupType.None)
+        if (this.power == PowerupPongPowerupManager.PowerupType.None)
         {
-            power = powerup.power;
+            this.power = power;
             if (isBot)
             {
                 GivePowerupOnClient(power);
@@ -126,142 +167,84 @@ public class PowerupPongPaddle : PaddleBehaviour
         levelCanvas.setPowerupImage(power, onLeft);
     }
 
+    // Client-Side
     private void usePowerup()
     {
+        float modifier = powerupManager.getModifier(power);
+        int duration = powerupManager.getDuration(power);
+
         switch (power)
         {
             case PowerupPongPowerupManager.PowerupType.BallSpeedDown:
-                tellServerToChangeBallSpeed(power);
+                gameManager.ChangeBallSpeed(modifier, duration);
                 break;
             case PowerupPongPowerupManager.PowerupType.BallSpeedUp:
-                tellServerToChangeBallSpeed(power);
+                gameManager.ChangeBallSpeed(modifier, duration);
                 break;
             case PowerupPongPowerupManager.PowerupType.BallReverse:
-                if (isBot || IsHost)
-                {
-                    gameManager.ReverseBallOnServer();
-                }
-                else
-                {
-                    InvokeServerRpc(gameManager.ReverseBallOnServer);
-                }
+                gameManager.ReverseBall();
                 break;
             case PowerupPongPowerupManager.PowerupType.PaddleSpeedDown:
-                tellServerToChangePaddleSpeed(power);
+                gameManager.ChangePaddleSpeed(modifier, duration, !onLeft);
                 break;
             case PowerupPongPowerupManager.PowerupType.PaddleSpeedUp:
-                StartCoroutine(ChangePaddleSpeed(powerupManager.getModifier(power), powerupManager.getDuration(power)));
+                gameManager.ChangePaddleSpeed(modifier, duration, onLeft);
                 break;
             case PowerupPongPowerupManager.PowerupType.PaddleExpand:
-                StartCoroutine(ChangePaddleScale(powerupManager.getModifier(power), powerupManager.getDuration(power)));
+                gameManager.ChangePaddleScale(modifier, duration, onLeft);
                 break;
             case PowerupPongPowerupManager.PowerupType.PaddleShrink:
-                tellServerToChangePaddleScale(power);
+                gameManager.ChangePaddleScale(modifier, duration, !onLeft);
                 break;
             case PowerupPongPowerupManager.PowerupType.WorldReverse:
-                if (isBot || IsHost)
-                {
-                    gameManager.WorldReverse();
-                }
-                else
-                {
-                    InvokeServerRpc(gameManager.WorldReverse);
-                }
+                gameManager.WorldReverse();
                 break;
         }
 
-        levelCanvas.clearPowerupImage(onLeft);
+        ClearPowerupOnClient(onLeft);
+        SetPowerupToNone();
+    }
+
+    [ServerRPC]
+    public void SetPowerupToNone()
+    {
         power = PowerupPongPowerupManager.PowerupType.None;
-    }
-
-    private void tellServerToChangeBallSpeed(PowerupPongPowerupManager.PowerupType power)
-    {
-        if (isBot || IsHost)
+        if (IsServer)
         {
-            gameManager.ChangeBallSpeedOnServer(
-                powerupManager.getModifier(power),
-                powerupManager.getDuration(power));
-        }
-        else
+            InvokeClientRpcOnEveryone(ClearPowerupOnClient, onLeft);
+        } else
         {
-            InvokeServerRpc(
-                gameManager.ChangeBallSpeedOnServer,
-                powerupManager.getModifier(power),
-                powerupManager.getDuration(power));
-        }
-    }
-
-    private void tellServerToChangePaddleSpeed(PowerupPongPowerupManager.PowerupType power)
-    {
-        if (isBot || IsHost)
-        {
-            gameManager.ChangeRemotePaddleSpeedOnClient(
-                powerupManager.getModifier(power),
-                powerupManager.getDuration(power),
-                onLeft);
-        }
-        else
-        {
-            InvokeServerRpc(
-                gameManager.ChangeRemotePaddleSpeed,
-                powerupManager.getModifier(power),
-                powerupManager.getDuration(power),
-                onLeft);
-        }
-    }
-
-    private void tellServerToChangePaddleScale(PowerupPongPowerupManager.PowerupType power)
-    {
-        if (isBot || IsHost)
-        {
-            gameManager.ChangeRemotePaddleScaleOnClient(
-                powerupManager.getModifier(power),
-                powerupManager.getDuration(power),
-                onLeft);
-        }
-        else
-        {
-            InvokeServerRpc(
-                gameManager.ChangeRemotePaddleScale,
-                powerupManager.getModifier(power),
-                powerupManager.getDuration(power),
-                onLeft);
+            InvokeServerRpc(SetPowerupToNone);
         }
     }
 
     [ClientRPC]
     public void ChangePaddleSpeedOnClient(float modifier, int duration)
     {
-        if (IsOwner)
-        {
-            ChangePaddleSpeed(modifier, duration);
-        }
+        StartCoroutine(ChangePaddleSpeed(modifier, duration));
     }
 
     public IEnumerator ChangePaddleSpeed(float modifier, int duration)
     {
+        TrailRenderer trail = GetComponent<TrailRenderer>();
         speed *= modifier;
         if (modifier > 1)
         {
-            GetComponent<TrailRenderer>().emitting = true;
+            trail.emitting = true;
         }
         // If duration < 0, effect lasts forever
         if (duration >= 0)
         {
             yield return new WaitForSeconds(duration);
             speed = baseSpeed;
-            GetComponent<TrailRenderer>().emitting = false;
+            trail.emitting = false;
         }
-        yield break;
     }
 
     [ClientRPC]
     public void ChangePaddleScaleOnClient(float modifier, int duration)
     {
-        if (IsOwner)
-        {
-            ChangePaddleScale(modifier, duration);
-        }
+        StartCoroutine(ChangePaddleScale(modifier, duration));
     }
 
     public IEnumerator ChangePaddleScale(float modifier, int duration)
@@ -274,6 +257,26 @@ public class PowerupPongPaddle : PaddleBehaviour
             transform.localScale = baseScale;
         }
         yield break;
+    }
+
+    [ServerRPC]
+    public void ClearPowerupOnServer(bool onLeft)
+    {
+        if (IsServer)
+        {
+            power = PowerupPongPowerupManager.PowerupType.None;
+            
+        }
+        else
+        {
+            InvokeServerRpc(ClearPowerupOnServer, onLeft);
+        }
+    }
+
+    [ClientRPC]
+    public void ClearPowerupOnClient(bool onLeft)
+    {
+        levelCanvas.clearPowerupImage(onLeft);
     }
 }
 

@@ -17,67 +17,84 @@ public class PowerupPongGameManager : GameManagerBehaviour
         paddlePrefab = Network.GetPrefab<PowerupPongPaddle>("PowerupPongPaddle");
     }
 
-    [ServerRPC]
-    public void ChangeBallSpeedOnServer(float modifier, int duration)
+    public override void respawnBall()
     {
-        StartCoroutine(ball.GetComponent<PowerupPongBall>().ChangeSpeed(modifier, duration));
+        ball.StopAllCoroutines();
+        base.respawnBall();
     }
 
-    [ServerRPC]
-    public void ChangeRemotePaddleSpeed(float modifier, int duration, bool fromLeft)
-    {
-        ulong clientId = fromLeft ? rightPaddle.OwnerClientId : leftPaddle.OwnerClientId;
-        InvokeClientRpcOnClient(ChangeRemotePaddleSpeedOnClient, clientId, modifier, duration, fromLeft);
-    }
 
-    [ClientRPC]
-    public void ChangeRemotePaddleSpeedOnClient(float modifier, int duration, bool fromLeft)
+    [ServerRPC(RequireOwnership = false)]
+    public void ChangeBallSpeed(float modifier, int duration)
     {
-        if (fromLeft)
+        if (IsServer)
         {
-            StartCoroutine(rightPaddle.GetComponent<PowerupPongPaddle>().ChangePaddleSpeed(modifier, duration));
-        } else
+            ball.StopAllCoroutines();
+            ball.StartCoroutine(ball.GetComponent<PowerupPongBall>().ChangeSpeed(modifier, duration));
+        } 
+        else
         {
-            StartCoroutine(leftPaddle.GetComponent<PowerupPongPaddle>().ChangePaddleSpeed(modifier, duration));
+            InvokeServerRpc(ChangeBallSpeed, modifier, duration);
         }
     }
 
-    [ServerRPC]
-    public void ChangeRemotePaddleScale(float modifier, int duration, bool fromLeft)
+    [ServerRPC(RequireOwnership = false)]
+    public void ChangePaddleSpeed(float modifier, int duration, bool onLeft)
     {
-        ulong clientId = fromLeft ? rightPaddle.OwnerClientId : leftPaddle.OwnerClientId;
-        InvokeClientRpcOnClient(ChangeRemotePaddleScaleOnClient, clientId, modifier, duration, fromLeft);
-    }
-
-    [ClientRPC]
-    public void ChangeRemotePaddleScaleOnClient(float modifier, int duration, bool fromLeft)
-    {
-        if (fromLeft)
+        if (IsServer)
         {
-            StartCoroutine(rightPaddle.GetComponent<PowerupPongPaddle>().ChangePaddleScale(modifier, duration));
+            PowerupPongPaddle paddle = onLeft ? leftPaddle.GetComponent<PowerupPongPaddle>() : rightPaddle.GetComponent<PowerupPongPaddle>();
+            paddle.InvokeClientRpcOnEveryone(paddle.ChangePaddleSpeedOnClient, modifier, duration);
         }
         else
         {
-            StartCoroutine(leftPaddle.GetComponent<PowerupPongPaddle>().ChangePaddleScale(modifier, duration));
+            InvokeServerRpc(ChangePaddleSpeed, modifier, duration, onLeft);
         }
     }
 
-    [ServerRPC]
-    public void ReverseBallOnServer()
+    [ServerRPC(RequireOwnership = false)]
+    public void ChangePaddleScale(float modifier, int duration, bool onLeft)
     {
-        ball.GetComponent<PowerupPongBall>().reverse();
+        if (IsServer)
+        {
+            PowerupPongPaddle paddle = onLeft ? leftPaddle.GetComponent<PowerupPongPaddle>() : rightPaddle.GetComponent<PowerupPongPaddle>();
+            paddle.InvokeClientRpcOnEveryone(paddle.ChangePaddleScaleOnClient, modifier, duration);
+        }
+        else
+        {
+            InvokeServerRpc(ChangePaddleScale, modifier, duration, onLeft);
+        }
     }
 
-    [ServerRPC]
+    [ServerRPC(RequireOwnership = false)]
+    public void ReverseBall()
+    {
+        if (IsServer)
+        {
+            ball.GetComponent<PowerupPongBall>().reverse();
+        }
+        else
+        {
+            InvokeServerRpc(ReverseBall);
+        }
+    }
+
+    [ServerRPC(RequireOwnership = false)]
     public void WorldReverse()
     {
-        InvokeClientRpcOnEveryone(WorldReverseOnClient);
+        if (IsServer)
+        {
+            InvokeClientRpcOnEveryone(WorldReverseOnClient);
+        }
+        else
+        {
+            InvokeServerRpc(WorldReverse);
+        }
     }
 
     [ClientRPC]
     public void WorldReverseOnClient()
     {
-        
         StartCoroutine(RotateCameraOverSeconds(90, 2));
     }
 
