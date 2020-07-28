@@ -41,7 +41,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
     /// </summary>
     protected void Start()
     {
-
+        initBackgroundMusic();
     }
 
     /// <summary>
@@ -92,6 +92,19 @@ public class GameManagerBehaviour : NetworkedBehaviour
             // Update Text
             InvokeClientRpcOnEveryone(UpdateScoreText, leftScore, rightScore);
         }
+    }
+
+    /// <summary>
+    /// Override this method for custom background music
+    /// </summary>
+    protected virtual void initBackgroundMusic()
+    {
+        // Init Background Music
+        GameObject backgroundMusicObject = new GameObject("BackgroundMusic");
+        AudioSource backgroundMusic = backgroundMusicObject.AddComponent<AudioSource>();
+        backgroundMusic.clip = Resources.Load<AudioClip>("Sound/Music/BackgroundMusic");
+        backgroundMusic.loop = true;
+        backgroundMusic.Play();
     }
 
     // Override this method to change which prefabs are spawned

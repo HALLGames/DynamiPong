@@ -162,4 +162,13 @@ public class PaddleBehaviour : NetworkedBehaviour
             body.velocity = velocity;
         }
     }
+
+    /// <summary>
+    /// Is the paddle a bot
+    /// </summary>
+    /// <returns>True if paddle is a bot</returns>
+    public bool IsBot()
+    {
+        return isBot;
+    }
 }
