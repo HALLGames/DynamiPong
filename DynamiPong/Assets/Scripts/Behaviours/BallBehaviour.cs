@@ -10,8 +10,8 @@ public class BallBehaviour : NetworkedBehaviour
 
     protected Rigidbody2D body;
 
-    public AudioSource wallHit;
-    public AudioSource paddleHit;
+    protected AudioSource wallHit;
+    protected AudioSource paddleHit;
 
     public override void NetworkStart()
     {
