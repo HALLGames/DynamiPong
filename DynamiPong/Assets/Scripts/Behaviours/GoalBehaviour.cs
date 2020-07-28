@@ -7,7 +7,7 @@ public class GoalBehaviour : MonoBehaviour
     protected bool onLeft;
     protected GameManagerBehaviour manager;
 
-    public AudioSource goalHit;
+    protected AudioSource goalHit;
 
     // Does NOT get called by Unity
     // Call this method with base.Start() in the method "new void Start()"

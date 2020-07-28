@@ -11,7 +11,7 @@ public class Settings : MonoBehaviour
     public string[] AboutTextLines = new string[0];
 
 
-    private string clicked = "", MessageDisplayOnAbout = "About \n ";
+    private string clicked = "";
     private Rect WindowRect = new Rect((Screen.width / 2) - 100, Screen.height / 2, 200, 200);
     private float volume = 1.0f;
     public void ToggleState()
