@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
+using UnityEngine.UI;
 
 public class PowerupPongGameManager : GameManagerBehaviour
 {
@@ -44,6 +45,10 @@ public class PowerupPongGameManager : GameManagerBehaviour
         if (IsServer)
         {
             PowerupPongPaddle paddle = onLeft ? leftPaddle.GetComponent<PowerupPongPaddle>() : rightPaddle.GetComponent<PowerupPongPaddle>();
+            if (paddle.IsBot())
+            {
+                paddle.ChangePaddleSpeedOnClient(modifier, duration);
+            }
             paddle.InvokeClientRpcOnEveryone(paddle.ChangePaddleSpeedOnClient, modifier, duration);
         }
         else
@@ -58,6 +63,10 @@ public class PowerupPongGameManager : GameManagerBehaviour
         if (IsServer)
         {
             PowerupPongPaddle paddle = onLeft ? leftPaddle.GetComponent<PowerupPongPaddle>() : rightPaddle.GetComponent<PowerupPongPaddle>();
+            if (paddle.IsBot())
+            {
+                paddle.ChangePaddleScaleOnClient(modifier, duration);
+            }
             paddle.InvokeClientRpcOnEveryone(paddle.ChangePaddleScaleOnClient, modifier, duration);
         }
         else

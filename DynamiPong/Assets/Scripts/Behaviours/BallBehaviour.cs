@@ -33,16 +33,17 @@ public class BallBehaviour : NetworkedBehaviour
         launchBall();
     }
 
+    /// <summary>
+    /// Override this method to customize what sounds are played
+    /// </summary>
     protected virtual void initSound()
     {
-
         // initializes the wall hit and paddle hit sound effects
         wallHit = gameObject.AddComponent<AudioSource>();
-        wallHit.clip = (AudioClip)Resources.Load("Sound/WallHit");
-      
+        wallHit.clip = Resources.Load<AudioClip>("Sound/Common/WallHit");
 
         paddleHit = gameObject.AddComponent<AudioSource>();
-        paddleHit.clip = (AudioClip)Resources.Load("Sound/PaddleHit");
+        paddleHit.clip = Resources.Load<AudioClip>("Sound/Common/PaddleHit");
     }
 
     /// <summary>
@@ -101,15 +102,15 @@ public class BallBehaviour : NetworkedBehaviour
             wallHit.Play();
 
             // Prevent sticking to the wall
-            if (body.velocity.y > 0 && body.velocity.y < 0.25f)
+            if (body.velocity.y >= 0 && body.velocity.y <= 1.5f)
             {
                 // Hit top wall with low velocity - launch down
-                body.velocity = new Vector2(body.velocity.x, -0.5f);
+                body.velocity = new Vector2(body.velocity.x, -1.5f);
             }
-            else if (body.velocity.y < 0 && body.velocity.y > -0.25f)
+            else if (body.velocity.y <= 0 && body.velocity.y >= 1.5f)
             {
                 // Hit bottom wall with low velocity - launch up
-                body.velocity = new Vector2(body.velocity.x, 0.5f);
+                body.velocity = new Vector2(body.velocity.x, 1.5f);
             }
         }
     }
