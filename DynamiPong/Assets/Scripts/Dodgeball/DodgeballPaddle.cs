@@ -11,7 +11,7 @@ public class DodgeballPaddle : PaddleBehaviour
 
     protected GameManagerBehaviour manager;
 
-    public AudioSource goalHit;
+    private AudioSource goalHit;
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
@@ -61,16 +61,23 @@ public class DodgeballPaddle : PaddleBehaviour
         if (botBall != null)
         {
             float ballY = botBall.transform.position.y;
+            float ballX = botBall.transform.position.x;
+
             float paddleY = transform.position.y;
 
             // Normal movement
-            if(ballY <= 0)
+            // has bot go up if ball is down and vice versa and resets position if ball is on other side
+            if (ballY <= 0 && ballX >= 0)
             {
-                body.velocity = new Vector2(0, paddleY +4);
+                body.velocity = new Vector2(0, paddleY +4) / 2;
+            }
+            else if (ballY > 0 && ballX >= 0) 
+            {
+                body.velocity = new Vector2(0, paddleY -5) / 2;
             }
             else
             {
-                body.velocity = new Vector2(0, paddleY -5);
+                body.velocity = new Vector2(0, 0 - paddleY) / 2;
             }
 
         }
