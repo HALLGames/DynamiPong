@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6552067885240843692}
   - component: {fileID: 3537127952319837546}
   - component: {fileID: 3537127952319837547}
+  - component: {fileID: 41384942251107970}
   m_Layer: 0
   m_Name: GravityWell
   m_TagString: Untagged
@@ -134,6 +135,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b00288ed5c8c9c5479007f7654fbc1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  oldSprite: {fileID: 0}
+  newSprite: {fileID: 0}
 --- !u!198 &3537127952319837546
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4856,3 +4859,20 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &41384942251107970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3537127952319837525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 209037615, guid: 01701b64234b4d523d8045142cbc73fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkedInstanceId: 0
+  PrefabHash: 8495956824721321381
+  PrefabHashGenerator: GravityWell
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 0
