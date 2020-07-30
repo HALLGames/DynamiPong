@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuManager : MonoBehaviour
 {
+    public AudioSource menuMusic;
+
     private MainMenuCanvas mainMenuCanvas;
 
     // Start is called before the first frame update
@@ -12,6 +14,14 @@ public class MainMenuManager : MonoBehaviour
     {
         mainMenuCanvas = FindObjectOfType<MainMenuCanvas>();
         mainMenuCanvas.creditsPanel.gameObject.SetActive(false);
+
+        // If there is no background music, create it
+        GameObject menuMusicObject = GameObject.FindGameObjectWithTag("BackgroundMusic");
+        if (menuMusicObject == null)
+        {
+            menuMusicObject = Instantiate(menuMusic).gameObject;
+            DontDestroyOnLoad(menuMusicObject);
+        }
     }
 
     // Update is called once per frame

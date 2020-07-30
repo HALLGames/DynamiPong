@@ -17,6 +17,8 @@ public class PowerupPongPaddle : PaddleBehaviour
     protected bool onLeft;
     private float baseSpeed;
     private Vector3 baseScale;
+    private AudioSource powerupSound;
+    private AudioSource collectSound;
 
     private PowerupPongCanvas levelCanvas;
 
@@ -34,6 +36,8 @@ public class PowerupPongPaddle : PaddleBehaviour
         power = PowerupPongPowerupManager.PowerupType.None;
         baseSpeed = speed;
         baseScale = transform.localScale;
+
+        initSound();
     }
 
     // Update is called once per frame
@@ -57,6 +61,15 @@ public class PowerupPongPaddle : PaddleBehaviour
                 }
             }
         }
+    }
+
+    public void initSound()
+    {
+        powerupSound = gameObject.AddComponent<AudioSource>();
+        powerupSound.clip = (AudioClip)Resources.Load("Sound/PowerupPong/UsePowerup");
+
+        collectSound = gameObject.AddComponent<AudioSource>();
+        collectSound.clip = Resources.Load<AudioClip>("Sound/PowerupPong/CollectPowerup");
     }
 
     public void initManagers()
@@ -164,6 +177,8 @@ public class PowerupPongPaddle : PaddleBehaviour
         {
             this.power = power;
         }
+
+        collectSound.Play();
         levelCanvas.setPowerupImage(power, onLeft);
     }
 
@@ -201,7 +216,10 @@ public class PowerupPongPaddle : PaddleBehaviour
                 break;
         }
 
-        ClearPowerupOnClient(onLeft);
+        if (isBot)
+        {
+            ClearPowerupOnClient(onLeft);
+        }
         SetPowerupToNone();
     }
 
@@ -219,9 +237,17 @@ public class PowerupPongPaddle : PaddleBehaviour
     }
 
     [ClientRPC]
+    public void ClearPowerupOnClient(bool onLeft)
+    {
+        powerupSound.Play();
+        levelCanvas.clearPowerupImage(onLeft);
+    }
+
+    [ClientRPC]
     public void ChangePaddleSpeedOnClient(float modifier, int duration)
     {
-        StartCoroutine(ChangePaddleSpeed(modifier, duration));
+        IEnumerator changePaddleSpeedCoroutine = ChangePaddleSpeed(modifier, duration);
+        StartCoroutine(changePaddleSpeedCoroutine);
     }
 
     public IEnumerator ChangePaddleSpeed(float modifier, int duration)
@@ -232,6 +258,7 @@ public class PowerupPongPaddle : PaddleBehaviour
         {
             trail.emitting = true;
         }
+
         // If duration < 0, effect lasts forever
         if (duration >= 0)
         {
@@ -257,26 +284,6 @@ public class PowerupPongPaddle : PaddleBehaviour
             transform.localScale = baseScale;
         }
         yield break;
-    }
-
-    [ServerRPC]
-    public void ClearPowerupOnServer(bool onLeft)
-    {
-        if (IsServer)
-        {
-            power = PowerupPongPowerupManager.PowerupType.None;
-            
-        }
-        else
-        {
-            InvokeServerRpc(ClearPowerupOnServer, onLeft);
-        }
-    }
-
-    [ClientRPC]
-    public void ClearPowerupOnClient(bool onLeft)
-    {
-        levelCanvas.clearPowerupImage(onLeft);
     }
 }
 

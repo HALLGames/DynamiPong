@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ConnectionCanvas : MonoBehaviour
@@ -13,9 +14,10 @@ public class ConnectionCanvas : MonoBehaviour
     public InputField portField;
     public Toggle hostToggle;
     public Button connectButton;
+    public Button backButton;
     public Text connectingText;
     public Text errorText;
-
+    
 
     // Start is called before the first frame update
     void Start()
@@ -63,6 +65,15 @@ public class ConnectionCanvas : MonoBehaviour
         portField.interactable = false;
         hostToggle.interactable = false;
         connectButton.interactable = false;
+        backButton.interactable = false;
         connectingText.text = "Connecting...";
+    }
+
+    public void OnBackButton()
+    {
+        // Don't carry network into main menu
+        Destroy(FindObjectOfType<Network>().gameObject);
+
+        SceneManager.LoadScene("MainMenu");
     }
 }

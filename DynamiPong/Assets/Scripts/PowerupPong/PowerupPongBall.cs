@@ -32,6 +32,11 @@ public class PowerupPongBall : BallBehaviour
         base.Update();
     }
 
+    protected override void initSound()
+    {
+        base.initSound();
+    }
+
     // Custom ball movement
     protected override void ballMovement()
     {

@@ -23,7 +23,9 @@ public class GoalBehaviour : MonoBehaviour
     {
         // initializes the goal hit and paddle hit sound effects
         goalHit = gameObject.AddComponent<AudioSource>();
-        goalHit.clip = (AudioClip)Resources.Load("Sound/GoalHit");
+        goalHit.clip = Resources.Load<AudioClip>("Sound/Common/GoalHit");
+        goalHit.volume = 0.5f;
+        goalHit.panStereo = onLeft ? -0.5f : 0.5f;
     }
 
     // Override this method for custom the goal trigger

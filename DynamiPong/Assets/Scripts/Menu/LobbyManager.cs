@@ -17,6 +17,7 @@ public class LobbyManager : NetworkedBehaviour
     private int connected;
     private List<ulong> readyPlayers;
     private bool localReady;
+    private GameInfo gameInfo;
 
     public override void NetworkStart()
     {
@@ -31,12 +32,16 @@ public class LobbyManager : NetworkedBehaviour
         canvas.updateConnectedPanel(readyPlayers);
         canvas.initHostPanel(IsHost);
 
-            if (IsServer)
+        if (IsServer)
         {
             // Call callbacks to track connections
             NetworkingManager.Singleton.OnClientConnectedCallback += ConnectionCallbackOnServer;
             NetworkingManager.Singleton.OnClientDisconnectCallback += ConnectionCallbackOnServer;
-        } 
+
+            // Create persistent GameInfo object to pass to GameManager
+            gameInfo = new GameObject("GameInfo").AddComponent<GameInfo>();
+            DontDestroyOnLoad(gameInfo.gameObject);
+        }
     }
 
     //--------------------------------------------
@@ -100,6 +105,8 @@ public class LobbyManager : NetworkedBehaviour
         int delay = 5;
         InvokeClientRpcOnEveryone(StartCountdownOnClient, delay);
         Invoke("SwitchScene", delay);
+
+        gameInfo.winCon = (GameInfo.WinCondition) canvas.winConDropdown.value;
     }
 
     // Server-Side, called by connect/disconnect callbacks
@@ -114,7 +121,7 @@ public class LobbyManager : NetworkedBehaviour
         }
 
         // UI
-        InvokeClientRpcOnEveryone(SetDropdownValueOnClient, canvas.levelDropdown.value);
+        InvokeClientRpcOnEveryone(SetDropdownValueOnClient, canvas.levelDropdown.value, canvas.winConDropdown.value);
         canvas.updateConnectedPanel(readyPlayers);
         InvokeClientRpcOnEveryone(UpdateConnectedOnClient, connected, canvas.playersText.text);
     }   
@@ -134,10 +141,8 @@ public class LobbyManager : NetworkedBehaviour
     [ServerRPC(RequireOwnership = false)]
     public void StartBotModeOnServer()
     {
-        // Create persistent bot flag to be found by a GameManager
-        GameObject botFlag = new GameObject();
-        botFlag.tag = "BotFlag";
-        DontDestroyOnLoad(botFlag);
+        // Add bot flag to game info
+        gameInfo.useBot = true;
 
         startGame();
     }
@@ -151,28 +156,30 @@ public class LobbyManager : NetworkedBehaviour
     {
         if (IsServer)
         {
-            InvokeClientRpcOnEveryone(SetDropdownValueOnClient, canvas.levelDropdown.value);
+            InvokeClientRpcOnEveryone(SetDropdownValueOnClient, canvas.levelDropdown.value, canvas.winConDropdown.value);
         }
         else
         {
-            InvokeServerRpc(SendDropdownValueToServer, canvas.levelDropdown.value);
+            InvokeServerRpc(SendDropdownValueToServer, canvas.levelDropdown.value, canvas.winConDropdown.value);
         }
     }
 
     // Client recieves new dropdown value from the server
     [ClientRPC]
-    public void SetDropdownValueOnClient(int value)
+    public void SetDropdownValueOnClient(int levelDropdownValue, int winConDropdownValue)
     {
-        canvas.levelDropdown.SetValueWithoutNotify(value);
+        canvas.levelDropdown.SetValueWithoutNotify(levelDropdownValue);
+        canvas.winConDropdown.SetValueWithoutNotify(winConDropdownValue);
 
         canvas.updateLevelPreview();
     }
 
     // Server recieves new dropdown value from a client
     [ServerRPC(RequireOwnership = false)]
-    public void SendDropdownValueToServer(int value)
+    public void SendDropdownValueToServer(int levelDropdownValue, int winConDropdownValue)
     {
-        canvas.levelDropdown.value = value;
+        canvas.levelDropdown.value = levelDropdownValue;
+        canvas.winConDropdown.value = winConDropdownValue;
     }
 
     //--------------------------------------------

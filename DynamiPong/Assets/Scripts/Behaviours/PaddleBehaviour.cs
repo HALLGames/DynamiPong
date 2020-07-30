@@ -122,7 +122,6 @@ public class PaddleBehaviour : NetworkedBehaviour
     public virtual void setupBot()
     {
         isBot = true;
-        transform.position = rightPosition;
         speed = 4.0f;
     }
 
@@ -161,5 +160,14 @@ public class PaddleBehaviour : NetworkedBehaviour
         {
             body.velocity = velocity;
         }
+    }
+
+    /// <summary>
+    /// Is the paddle a bot
+    /// </summary>
+    /// <returns>True if paddle is a bot</returns>
+    public bool IsBot()
+    {
+        return isBot;
     }
 }

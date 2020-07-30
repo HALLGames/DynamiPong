@@ -9,6 +9,9 @@ using MLAPI.Transports.UNET;
 
 public class Network : MonoBehaviour
 {
+    public AudioSource menuMusic;
+
+    public Dictionary<ulong, int> connectedPlayerScores;
     private Dictionary<ulong, string> connectedPlayerNames;
     private ConnectionCanvas canvas;
 
@@ -17,6 +20,15 @@ public class Network : MonoBehaviour
     {
         canvas = FindObjectOfType<ConnectionCanvas>();
         connectedPlayerNames = new Dictionary<ulong, string>();
+        connectedPlayerScores = new Dictionary<ulong, int>();
+
+        // If there is no background music, create it
+        GameObject menuMusicObject = GameObject.FindGameObjectWithTag("BackgroundMusic");
+        if (menuMusicObject == null)
+        {
+            menuMusicObject = Instantiate(menuMusic).gameObject;
+            DontDestroyOnLoad(menuMusicObject);
+        }
     }
 
     public void OnConnectClick()
@@ -63,6 +75,9 @@ public class Network : MonoBehaviour
                 startClient();
             }
         }
+
+        // Destroy menu music
+        Destroy(GameObject.FindGameObjectWithTag("BackgroundMusic"));
 
         // Enter Lobby
         if (IsServer())
@@ -131,7 +146,9 @@ public class Network : MonoBehaviour
             i++;
         }
 
+        // Add to dictionaries
         connectedPlayerNames.Add(clientId, newName);
+        connectedPlayerScores.Add(clientId, 0);
     }
 
     /// <summary>

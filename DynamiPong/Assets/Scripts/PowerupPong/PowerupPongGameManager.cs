@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
+using UnityEngine.UI;
 
 public class PowerupPongGameManager : GameManagerBehaviour
 {
@@ -44,6 +45,10 @@ public class PowerupPongGameManager : GameManagerBehaviour
         if (IsServer)
         {
             PowerupPongPaddle paddle = onLeft ? leftPaddle.GetComponent<PowerupPongPaddle>() : rightPaddle.GetComponent<PowerupPongPaddle>();
+            if (paddle.IsBot())
+            {
+                paddle.ChangePaddleSpeedOnClient(modifier, duration);
+            }
             paddle.InvokeClientRpcOnEveryone(paddle.ChangePaddleSpeedOnClient, modifier, duration);
         }
         else
@@ -58,6 +63,10 @@ public class PowerupPongGameManager : GameManagerBehaviour
         if (IsServer)
         {
             PowerupPongPaddle paddle = onLeft ? leftPaddle.GetComponent<PowerupPongPaddle>() : rightPaddle.GetComponent<PowerupPongPaddle>();
+            if (paddle.IsBot())
+            {
+                paddle.ChangePaddleScaleOnClient(modifier, duration);
+            }
             paddle.InvokeClientRpcOnEveryone(paddle.ChangePaddleScaleOnClient, modifier, duration);
         }
         else
@@ -119,6 +128,19 @@ public class PowerupPongGameManager : GameManagerBehaviour
         {
             camera.transform.eulerAngles = new Vector3(0, 0, 0);
         }
+    }
+
+    protected override void endGame()
+    {
+        // UnSpawn powerups
+        PowerupPongPowerupManager powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
+        foreach (PowerupPongPowerup powerup in powerupManager.spawnedPowerups)
+        {
+            powerup.GetComponent<NetworkedObject>().UnSpawn();
+            Destroy(powerup.gameObject);
+        }
+
+        base.endGame();
     }
 }
 
