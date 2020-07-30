@@ -24,7 +24,7 @@ public class VortexSpin : NetworkedBehaviour
     // Update is called once per frame
     public override void NetworkStart()
     {
-
+        
     }
     void Update()
     {
@@ -36,26 +36,33 @@ public class VortexSpin : NetworkedBehaviour
             if (rand < 0.001)
             {
                 ChangeSprite();
-                InvokeClientRpcOnEveryone(ChangeSprite);
+                InvokeClientRpcOnEveryone(ChangeSpriteOnClient);
             }
         }
     }
 
-    [ClientRPC]
-    void ChangeSprite()
+    
+    public void ChangeSprite()
     {
         pointEffector.forceMagnitude *= -1;
+
+    }
+
+    [ClientRPC]
+    public void ChangeSpriteOnClient()
+    {
+        // pointEffector.forceMagnitude *= -1;
         var ps = particles.main;
         ps.startSpeedMultiplier *= -1;
 
         if (spriteRenderer.sprite != newSprite)
         {
             spriteRenderer.sprite = newSprite;
-        }else
+        }
+        else
         {
             spriteRenderer.sprite = oldSprite;
         }
-        
-    }
 
+    }
 }
