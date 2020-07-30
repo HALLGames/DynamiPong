@@ -160,6 +160,21 @@ public class Network : MonoBehaviour
         return connectedPlayerNames;
     }
 
+    public void CancelConnection()
+    {
+        if (IsClient())
+        {
+            NetworkingManager.Singleton.StopClient();
+        } else if (IsServer())
+        {
+            NetworkingManager.Singleton.StopServer();
+        } else if (IsHost())
+        {
+            NetworkingManager.Singleton.StopHost();
+        }
+        
+    }
+
     //-------------------------------------------------------
     // Static Helper Functions
     //-------------------------------------------------------
@@ -203,6 +218,11 @@ public class Network : MonoBehaviour
     public static bool IsClient()
     {
         return NetworkingManager.Singleton.IsClient;
+    }
+
+    public static bool IsHost()
+    {
+        return NetworkingManager.Singleton.IsHost;
     }
 
     /// <summary>
