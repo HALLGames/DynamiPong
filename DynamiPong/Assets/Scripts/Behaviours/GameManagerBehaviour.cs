@@ -387,7 +387,8 @@ public class GameManagerBehaviour : NetworkedBehaviour
     {
         unspawnObjects();
 
-        ulong? winnerClientId = null;
+        ulong winnerClientId = 0;
+        bool hasWinner = true;
         switch (winState)
         {
             case PaddleWinState.LeftWon:
@@ -396,23 +397,26 @@ public class GameManagerBehaviour : NetworkedBehaviour
             case PaddleWinState.RightWon:
                 winnerClientId = rightPaddle.OwnerClientId;
                 break;
+            case PaddleWinState.Tie:
+                hasWinner = false;
+                break;
         }
 
         // Update connectedPlayerScores on network
-        if (winnerClientId != null)
+        if (hasWinner)
         {
-            network.connectedPlayerScores[(ulong) winnerClientId]++;
+            network.connectedPlayerScores[winnerClientId]++;
         }
         
-        InvokeClientRpcOnEveryone(WinGameOnClient, winnerClientId);
+        InvokeClientRpcOnEveryone(WinGameOnClient, hasWinner, winnerClientId);
     }
 
     // See if we are the client that won, then display the victory panel accordingly
     // If winnerClientId is null, then the game is a tie
     [ClientRPC]
-    public void WinGameOnClient(ulong? winnerClientId)
+    public void WinGameOnClient(bool hasWinner, ulong winnerClientId)
     {
-        if (winnerClientId == null)
+        if (!hasWinner)
         {
             canvas.showVictoryPanel(GameWinState.Tie);
         }

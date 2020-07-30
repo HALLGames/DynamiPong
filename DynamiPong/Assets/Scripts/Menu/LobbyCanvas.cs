@@ -157,7 +157,7 @@ public class LobbyCanvas : MonoBehaviour
         countdownPanel.gameObject.SetActive(false);
     }
 
-    private void disableUI()
+    public void disableUI()
     {
         // Disable most buttons
         readyButton.interactable = false;

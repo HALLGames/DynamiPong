@@ -7,6 +7,7 @@ using MLAPI.Messaging;
 using MLAPI.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using MLAPI.Connection;
 
 public class LobbyManager : NetworkedBehaviour
 {
@@ -42,6 +43,7 @@ public class LobbyManager : NetworkedBehaviour
             gameInfo = new GameObject("GameInfo").AddComponent<GameInfo>();
             DontDestroyOnLoad(gameInfo.gameObject);
 
+            connected = NetworkingManager.Singleton.ConnectedClientsList.Count;
             TellClientsToUpdateUI();
         }
     }
@@ -68,18 +70,23 @@ public class LobbyManager : NetworkedBehaviour
     }
 
     // Disconnect Button Clicked
+    [ClientRPC]
     public void OnDisconnectButton()
     {
         if (IsHost)
         {
-            InvokeClientRpcOnEveryoneExcept(DisconnectClient, OwnerClientId);
+            InvokeClientRpcOnEveryoneExcept(OnDisconnectButton, OwnerClientId);
+            canvas.disableUI();
+            StartCoroutine(disconnectHost());
+        } 
+        else
+        {
+            // Destroy old network
+            Destroy(GameObject.FindGameObjectWithTag("Network"));
+
+            // Go back
+            SceneManager.LoadScene("Connection");
         }
-
-        // Destroy old network
-        Destroy(GameObject.FindGameObjectWithTag("Network"));
-
-        // Go back
-        SceneManager.LoadScene("Connection");
     }
 
     //--------------------------------------------
@@ -137,10 +144,15 @@ public class LobbyManager : NetworkedBehaviour
         canvas.botButton.interactable = connected < 2; // Bot button disabled if there are two or more players
     }
 
-    [ClientRPC]
-    public void DisconnectClient()
+    private IEnumerator disconnectHost()
     {
-        OnDisconnectButton();
+        yield return new WaitForSeconds(0.5f);
+
+        // Destroy old network
+        Destroy(GameObject.FindGameObjectWithTag("Network"));
+
+        // Go back
+        SceneManager.LoadScene("Connection");
     }
 
     // A client wants to play with bot
