@@ -123,4 +123,9 @@ public class PowerupPongPowerup : NetworkedBehaviour
             }
         }
     }
+
+    private void OnDestroy()
+    {
+        powerupManager.spawnedPowerups.Remove(this);
+    }
 }

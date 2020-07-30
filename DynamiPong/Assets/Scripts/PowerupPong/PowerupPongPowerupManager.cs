@@ -21,6 +21,8 @@ public class PowerupPongPowerupManager : NetworkedBehaviour
 
     private Transform powerupObjects;
     private PowerupPongPowerup powerupPrefab;
+    [HideInInspector]
+    public List<PowerupPongPowerup> spawnedPowerups;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +34,9 @@ public class PowerupPongPowerupManager : NetworkedBehaviour
     {
         powerupPrefab = Network.GetPrefab<PowerupPongPowerup>("PowerupPongPowerup");
         powerupObjects = new GameObject("Powerups").transform;
-        
+        spawnedPowerups = new List<PowerupPongPowerup>();
+
+
         if (IsServer)
         {
             // Repeated spawning powerups
@@ -51,6 +55,7 @@ public class PowerupPongPowerupManager : NetworkedBehaviour
         // Spawn
         PowerupPongPowerup powerup = Instantiate(powerupPrefab, spawnpoint.position, Quaternion.identity, powerupObjects);
         powerup.GetComponent<NetworkedObject>().Spawn();
+        spawnedPowerups.Add(powerup);
     }
 
     public Sprite getSprite(PowerupType power)

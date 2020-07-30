@@ -10,12 +10,15 @@ public class Settings : MonoBehaviour
     private float height = 480;
     private Settings window;
     private Rect WindowRect;
+    private GameManagerBehaviour gameManager;
 
     private float volume = 1.0f;
 
     private void Awake()
     {
         window = GetComponent<Settings>();
+        gameManager  = FindObjectOfType<GameManagerBehaviour>();
+        volume = AudioListener.volume;
         WindowRect = new Rect((Screen.width / 2) - (width / 2), (Screen.height / 2) - (height / 2), width, height);
     }
 
@@ -48,13 +51,21 @@ public class Settings : MonoBehaviour
 
         GUILayout.EndVertical();
 
+        // Disconnect Button
+        if (gameManager != null)
+        {
+            if (GUILayout.Button("Disconnect"))
+            {
+                gameManager.OnDisconnectButton();
+            }
+        }
+        
+
         // Back Button
         if (GUILayout.Button("Back"))
         {
             ToggleState();
         }
     }
-
-
 }
 

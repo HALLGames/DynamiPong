@@ -122,7 +122,6 @@ public class PaddleBehaviour : NetworkedBehaviour
     public virtual void setupBot()
     {
         isBot = true;
-        transform.position = rightPosition;
         speed = 4.0f;
     }
 
