@@ -57,10 +57,23 @@ public class GameTimer : MonoBehaviour
         timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
-    public void startTimer(float seconds)
+    public void start(float seconds)
     {
         timeRemaining = seconds;
         isRunning = true;
+    }
+
+    public void stop()
+    {
+        isRunning = false;
+    }
+
+    public void resume()
+    {
+        if (timeRemaining > 0)
+        {
+            isRunning = true;
+        }
     }
 
     public bool isTimerRunning()

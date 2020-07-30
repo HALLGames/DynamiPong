@@ -37,6 +37,7 @@ public class LevelCanvasBehaviour : MonoBehaviour
     public virtual void disableUI()
     {
         concedeButton.interactable = false;
+        timer.stop();
     }
 
     public void initWinConText(GameInfo.WinCondition winCon)
@@ -55,11 +56,11 @@ public class LevelCanvasBehaviour : MonoBehaviour
                 break;
             case GameInfo.WinCondition.MostAfter5:
                 text += "Most Points After 5 Minutes";
-                timer.startTimer(5 * 60);
+                timer.start(5 * 60);
                 break;
             case GameInfo.WinCondition.MostAfter10:
                 text += "Most Points After 10 Minutes";
-                timer.startTimer(10 * 60);
+                timer.start(10 * 60);
                 break;
         }
         winConText.text = text;
