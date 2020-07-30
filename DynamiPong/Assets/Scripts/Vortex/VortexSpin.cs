@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using MLAPI;
+using MLAPI.Messaging;
 using UnityEngine;
 
-public class VortexSpin : MonoBehaviour
+public class VortexSpin : NetworkedBehaviour
 {
     PointEffector2D pointEffector;
     
@@ -20,25 +22,32 @@ public class VortexSpin : MonoBehaviour
         //oldSprite = GetComponent<Sprite>();
     }
     // Update is called once per frame
+    public override void NetworkStart()
+    {
+
+    }
     void Update()
     {
         transform.Rotate(0, 0, 50 * Time.deltaTime); //rotates 50 degrees per second around z axis
-
-        // Chance based logic
-        float rand = UnityEngine.Random.value;
-        if (rand < 0.001)
+        if (IsServer)
         {
-            // Small chance to enable boost
-            pointEffector.forceMagnitude *= -1;
-            var ps = particles.main;
-            ps.startSpeedMultiplier *= -1;
-
-            ChangeSprite();
+            // Chance based logic
+            float rand = UnityEngine.Random.value;
+            if (rand < 0.001)
+            {
+                ChangeSprite();
+                InvokeClientRpcOnEveryone(ChangeSprite);
+            }
         }
     }
 
+    [ClientRPC]
     void ChangeSprite()
     {
+        pointEffector.forceMagnitude *= -1;
+        var ps = particles.main;
+        ps.startSpeedMultiplier *= -1;
+
         if (spriteRenderer.sprite != newSprite)
         {
             spriteRenderer.sprite = newSprite;
