@@ -41,6 +41,8 @@ public class LobbyManager : NetworkedBehaviour
             // Create persistent GameInfo object to pass to GameManager
             gameInfo = new GameObject("GameInfo").AddComponent<GameInfo>();
             DontDestroyOnLoad(gameInfo.gameObject);
+
+            TellClientsToUpdateUI();
         }
     }
 
@@ -68,8 +70,14 @@ public class LobbyManager : NetworkedBehaviour
     // Disconnect Button Clicked
     public void OnDisconnectButton()
     {
+        if (IsHost)
+        {
+            InvokeClientRpcOnEveryoneExcept(DisconnectClient, OwnerClientId);
+        }
+
         // Destroy old network
         Destroy(GameObject.FindGameObjectWithTag("Network"));
+
         // Go back
         SceneManager.LoadScene("Connection");
     }
@@ -89,24 +97,13 @@ public class LobbyManager : NetworkedBehaviour
             readyPlayers.Remove(clientId);
         }
 
-        canvas.updateConnectedPanel(readyPlayers);
-        InvokeClientRpcOnEveryone(UpdateConnectedOnClient, connected, canvas.playersText.text);
+        TellClientsToUpdateUI();
 
         if (readyPlayers.Count >= 2)
         {
             // Enough players are ready, launch with delay
             startGame();
         }
-    }
-
-    // Server-Side, notifies clients and queues scene switch
-    private void startGame()
-    {
-        int delay = 5;
-        InvokeClientRpcOnEveryone(StartCountdownOnClient, delay);
-        Invoke("SwitchScene", delay);
-
-        gameInfo.winCon = (GameInfo.WinCondition) canvas.winConDropdown.value;
     }
 
     // Server-Side, called by connect/disconnect callbacks
@@ -120,11 +117,15 @@ public class LobbyManager : NetworkedBehaviour
             readyPlayers.Remove(clientId);
         }
 
-        // UI
+        TellClientsToUpdateUI();
+    }
+
+    private void TellClientsToUpdateUI()
+    {
         InvokeClientRpcOnEveryone(SetDropdownValueOnClient, canvas.levelDropdown.value, canvas.winConDropdown.value);
         canvas.updateConnectedPanel(readyPlayers);
         InvokeClientRpcOnEveryone(UpdateConnectedOnClient, connected, canvas.playersText.text);
-    }   
+    }
 
     [ClientRPC]
     public void UpdateConnectedOnClient(int connected, string text)
@@ -136,6 +137,11 @@ public class LobbyManager : NetworkedBehaviour
         canvas.botButton.interactable = connected < 2; // Bot button disabled if there are two or more players
     }
 
+    [ClientRPC]
+    public void DisconnectClient()
+    {
+        OnDisconnectButton();
+    }
 
     // A client wants to play with bot
     [ServerRPC(RequireOwnership = false)]
@@ -145,6 +151,16 @@ public class LobbyManager : NetworkedBehaviour
         gameInfo.useBot = true;
 
         startGame();
+    }
+
+    // Server-Side, notifies clients and queues scene switch
+    private void startGame()
+    {
+        int delay = 5;
+        InvokeClientRpcOnEveryone(StartCountdownOnClient, delay);
+        Invoke("SwitchScene", delay);
+
+        gameInfo.winCon = (GameInfo.WinCondition)canvas.winConDropdown.value;
     }
 
     //--------------------------------------------

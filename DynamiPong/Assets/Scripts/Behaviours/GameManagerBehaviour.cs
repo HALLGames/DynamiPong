@@ -133,11 +133,11 @@ public class GameManagerBehaviour : NetworkedBehaviour
                 winScore = 30;
                 break;
             case GameInfo.WinCondition.MostAfter5:
-                canvas.timer.startTimer(5 * 60);
+                canvas.timer.start(5 * 60);
                 canvas.timer.TimerFinishedCallback += TimeOutScore;
                 break;
             case GameInfo.WinCondition.MostAfter10:
-                canvas.timer.startTimer(5 * 60);
+                canvas.timer.start(5 * 60);
                 canvas.timer.TimerFinishedCallback += TimeOutScore;
                 break;
         }
@@ -346,6 +346,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         SceneManager.LoadScene("Connection");
     }
 
+    // Client clicked concede button
     public void OnConcedeButton()
     {
         InvokeServerRpc(ConcedeGameOnServer, NetworkingManager.Singleton.LocalClientId);
@@ -357,6 +358,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         endGame();
     }
 
+    // Checks who clicked the concede button and assigns wins accordingly
     [ServerRPC (RequireOwnership = false)]
     public void ConcedeGameOnServer(ulong clientId)
     {
@@ -379,6 +381,8 @@ public class GameManagerBehaviour : NetworkedBehaviour
         }
     }
 
+    // Server-side: Game was won between two clients (no bot)
+    // Find the client that won and tell everyone
     protected void WinGameOnServer(PaddleWinState winState)
     {
         unspawnObjects();
@@ -394,6 +398,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
                 break;
         }
 
+        // Update connectedPlayerScores on network
         if (winnerClientId != null)
         {
             network.connectedPlayerScores[(ulong) winnerClientId]++;
@@ -402,6 +407,8 @@ public class GameManagerBehaviour : NetworkedBehaviour
         InvokeClientRpcOnEveryone(WinGameOnClient, winnerClientId);
     }
 
+    // See if we are the client that won, then display the victory panel accordingly
+    // If winnerClientId is null, then the game is a tie
     [ClientRPC]
     public void WinGameOnClient(ulong? winnerClientId)
     {
@@ -419,6 +426,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         }
     }
 
+    // Server-side: game was won against a bot (one player, one bot)
     protected void WinVsBotOnServer(PaddleWinState winState)
     {
         unspawnObjects();
@@ -426,6 +434,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         InvokeClientRpcOnEveryone(WinVsBotOnClient, winState);
     }
 
+    // Display panel based on win state
     [ClientRPC]
     public void WinVsBotOnClient(PaddleWinState winState)
     {
@@ -443,6 +452,8 @@ public class GameManagerBehaviour : NetworkedBehaviour
         }
     }
 
+    // Call by clients clicking "Continue" on victory panel
+    // Wait for them before switching back to the lobby
     [ServerRPC (RequireOwnership = false)]
     public void WaitForClientsBeforeEnd()
     {
@@ -453,14 +464,18 @@ public class GameManagerBehaviour : NetworkedBehaviour
         }
     }
 
+    /// <summary>
+    /// Override this method to specify objects to unspawn and destroy on victory.
+    /// </summary>
     protected virtual void unspawnObjects()
     {
+        // Unspawns the ball
         ball.GetComponent<NetworkedObject>().UnSpawn();
         Destroy(ball.gameObject);
     }
 
     /// <summary>
-    /// Override this function to customize what happens when the game ends.
+    /// Override this function to customize what happens when the game quits.
     /// Make sure to unspawn network objects.
     /// </summary>
     /// <param name="clientId"></param>
@@ -470,6 +485,12 @@ public class GameManagerBehaviour : NetworkedBehaviour
         if (IsHost)
         {
             leftPaddle.GetComponent<NetworkedObject>().UnSpawn();
+
+            NetworkedObject rightPaddleNetwork = rightPaddle.GetComponent<NetworkedObject>();
+            if (rightPaddleNetwork.IsSpawned)
+            {
+                rightPaddleNetwork.UnSpawn();
+            }
         }
 
         NetworkSceneManager.SwitchScene("Lobby");
