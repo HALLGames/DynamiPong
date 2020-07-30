@@ -94,6 +94,14 @@ public class BallBehaviour : NetworkedBehaviour
 
         if (collision.transform.tag == "Paddle")
         {
+            float help = collision.transform.GetComponent<Rigidbody2D>().velocity.y;
+            if (help > 0)
+            {
+                body.velocity = new Vector2(body.velocity.x , body.velocity.y + 0.5f);
+            }else if (help < 0)
+            {
+                body.velocity = new Vector2(body.velocity.x, body.velocity.y - 0.5f);
+            }
             if (paddleHit.enabled)
             {
                 paddleHit.Play();

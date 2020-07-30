@@ -25,6 +25,7 @@ public class VortexBall : BallBehaviour
     // Custom ball movement
     protected override void ballMovement()
     {
+        body.AddTorque(400);
         // Clamp x-velocity a little, in order to stop the ball from getting caught in the middle
         float normX = body.velocity.normalized.x;
         if (normX > 0.1)
