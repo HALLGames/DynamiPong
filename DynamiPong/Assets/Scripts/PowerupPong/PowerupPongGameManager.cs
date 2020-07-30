@@ -129,6 +129,19 @@ public class PowerupPongGameManager : GameManagerBehaviour
             camera.transform.eulerAngles = new Vector3(0, 0, 0);
         }
     }
+
+    protected override void endGame()
+    {
+        // UnSpawn powerups
+        PowerupPongPowerupManager powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
+        foreach (PowerupPongPowerup powerup in powerupManager.spawnedPowerups)
+        {
+            powerup.GetComponent<NetworkedObject>().UnSpawn();
+            Destroy(powerup.gameObject);
+        }
+
+        base.endGame();
+    }
 }
 
 

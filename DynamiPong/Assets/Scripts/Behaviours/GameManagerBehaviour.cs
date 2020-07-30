@@ -21,6 +21,8 @@ public class GameManagerBehaviour : NetworkedBehaviour
     // Score
     protected int leftScore;
     protected int rightScore;
+    protected GameInfo.WinCondition winCon = GameInfo.WinCondition.Freeplay;
+    protected int winScore = int.MaxValue;
 
     // Paddle & Ball
     protected PaddleBehaviour paddlePrefab;
@@ -34,6 +36,15 @@ public class GameManagerBehaviour : NetworkedBehaviour
     protected string leftName;
     [SyncedVar]
     protected string rightName;
+
+    // End of Game
+    public enum PaddleWinState { LeftWon, RightWon, Tie}
+    public enum GameWinState { Win, Loss, Tie}
+    protected int playersReady = 0;
+
+    //-----------------------------------------------
+    // Initialization
+    //-----------------------------------------------
 
     /// <summary>
     /// Does NOT get called by Unity
@@ -63,21 +74,25 @@ public class GameManagerBehaviour : NetworkedBehaviour
         canvas = FindObjectOfType<LevelCanvasBehaviour>();
         network = FindObjectOfType<Network>();
 
-        // Add disconnect button listener
-        canvas.disconnectButton.onClick.AddListener(OnDisconnectButton);
+        // Add concede button listener
+        canvas.concedeButton.onClick.AddListener(OnConcedeButton);
 
         if (IsServer)
         {
             // On Disconnect callback - end the game if a player disconnects
-            NetworkingManager.Singleton.OnClientDisconnectCallback += endGame;
+            NetworkingManager.Singleton.OnClientDisconnectCallback += clientDisconnectCallback;
 
-            // Check if we should use a bot - bot flag created by lobby
-            GameObject botFlag = GameObject.FindGameObjectWithTag("BotFlag");
-            if (botFlag != null)
+            // Load in GameInfo created by lobby
+            GameInfo gameInfo = FindObjectOfType<GameInfo>();
+            if (gameInfo != null)
             {
-                useBot = true;
-                Destroy(botFlag);
+                useBot = gameInfo.useBot;
+                winCon = gameInfo.winCon;
+
+                Destroy(gameInfo);
             }
+
+            initWinCon();
 
             getPrefabs();
 
@@ -107,6 +122,38 @@ public class GameManagerBehaviour : NetworkedBehaviour
         backgroundMusic.Play();
     }
 
+    protected void initWinCon()
+    {
+        switch(winCon)
+        {
+            case GameInfo.WinCondition.FirstTo15:
+                winScore = 15;
+                break;
+            case GameInfo.WinCondition.FirstTo30:
+                winScore = 30;
+                break;
+            case GameInfo.WinCondition.MostAfter5:
+                canvas.timer.startTimer(5 * 60);
+                canvas.timer.TimerFinishedCallback += TimeOutScore;
+                break;
+            case GameInfo.WinCondition.MostAfter10:
+                canvas.timer.startTimer(5 * 60);
+                canvas.timer.TimerFinishedCallback += TimeOutScore;
+                break;
+        }
+        InvokeClientRpcOnEveryone(InitWinConOnClient, winCon);
+    }
+
+    [ClientRPC]
+    public void InitWinConOnClient(GameInfo.WinCondition winCon)
+    {
+        canvas.initWinConText(winCon);
+    }
+
+    //-----------------------------------------------
+    // Spawning
+    //-----------------------------------------------
+
     // Override this method to change which prefabs are spawned
     protected virtual void getPrefabs()
     {
@@ -132,6 +179,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
             // Bot
             rightPaddle = Instantiate(paddlePrefab);
             rightPaddle.setupBot();
+            rightPaddle.init(false);
             rightName = "Bot";
         }
         else
@@ -169,6 +217,10 @@ public class GameManagerBehaviour : NetworkedBehaviour
         }
     }
 
+    //-----------------------------------------------
+    // Scoring
+    //-----------------------------------------------
+
     // Called by the goals.
     public void scoreGoal(bool ballHitOnLeft)
     {
@@ -179,13 +231,20 @@ public class GameManagerBehaviour : NetworkedBehaviour
             InvokeClientRpcOnEveryone(UpdateScoreText, leftScore, rightScore);
 
             // If there is a ball, destroy it and create a new one
-            if (ball != null)
+            if (ball != null && ball.GetComponent<NetworkedObject>().IsSpawned)
             {
                 ball.GetComponent<NetworkedObject>().UnSpawn();
                 Destroy(ball.gameObject);
                 spawnBall();
             }
         }
+    }
+
+    [ClientRPC]
+    public virtual void UpdateScoreText(int leftScore, int rightScore)
+    {
+        canvas.leftScoreText.text = leftName + ": " + leftScore.ToString();
+        canvas.rightScoreText.text = rightName + ": " + rightScore.ToString();
     }
 
     /// <summary>
@@ -203,14 +262,74 @@ public class GameManagerBehaviour : NetworkedBehaviour
         {
             leftScore++;
         }
+
+        checkWinScore();
     }
 
-    [ClientRPC]
-    public virtual void UpdateScoreText(int leftScore, int rightScore)
+    // Check if win score has been reached
+    protected void checkWinScore()
     {
-        canvas.leftScoreText.text = leftName + ": " + leftScore.ToString();
-        canvas.rightScoreText.text = rightName + ": " + rightScore.ToString();
+        if (rightPaddle.IsBot())
+        {
+            if (leftScore >= winScore)
+            {
+                WinVsBotOnServer(PaddleWinState.LeftWon);
+            }
+            else if (rightScore >= winScore)
+            {
+                WinVsBotOnServer(PaddleWinState.RightWon);
+            }
+            
+        } 
+        else
+        {
+            if (leftScore >= winScore)
+            {
+                WinGameOnServer(PaddleWinState.LeftWon);
+            }
+            else if (rightScore >= winScore)
+            {
+                WinGameOnServer(PaddleWinState.RightWon);
+            }
+        }
     }
+
+    protected void TimeOutScore()
+    {
+        if (rightPaddle.IsBot())
+        {
+            if (leftScore > rightScore)
+            {
+                WinVsBotOnServer(PaddleWinState.LeftWon);
+            }
+            else if (leftScore < rightScore)
+            {
+                WinVsBotOnServer(PaddleWinState.RightWon);
+            } else 
+            {
+                WinVsBotOnServer(PaddleWinState.Tie);
+            }
+        }
+        else
+        {
+            if (leftScore > rightScore)
+            {
+                WinGameOnServer(PaddleWinState.LeftWon);
+            }
+            else if (leftScore < rightScore)
+            {
+                WinGameOnServer(PaddleWinState.RightWon);
+            }
+            else
+            {
+                WinGameOnServer(PaddleWinState.Tie);
+            }
+        }
+    }
+
+    //-----------------------------------------------
+    // End of Game
+    //-----------------------------------------------
 
     [ClientRPC]
     public void OnDisconnectButton()
@@ -227,14 +346,126 @@ public class GameManagerBehaviour : NetworkedBehaviour
         SceneManager.LoadScene("Connection");
     }
 
-    /// <summary>
-    /// Override this function to customize what happens when the game ends.
-    /// Make sure to unspawn network objects;
-    /// </summary>
-    /// <param name="clientId"></param>
-    protected virtual void endGame(ulong clientId)
+    public void OnConcedeButton()
+    {
+        InvokeServerRpc(ConcedeGameOnServer, NetworkingManager.Singleton.LocalClientId);
+    }
+
+    // Called when a client disconnects - we end the game
+    protected void clientDisconnectCallback(ulong clientId)
+    {
+        endGame();
+    }
+
+    [ServerRPC (RequireOwnership = false)]
+    public void ConcedeGameOnServer(ulong clientId)
+    {
+        PaddleWinState winState;
+        if (leftPaddle.OwnerClientId == clientId)
+        {
+            winState = PaddleWinState.RightWon;
+        } else
+        {
+            winState = PaddleWinState.LeftWon;
+        }
+
+        if (rightPaddle.IsBot())
+        {
+            WinVsBotOnServer(winState);
+        } 
+        else
+        {
+            WinGameOnServer(winState);
+        }
+    }
+
+    protected void WinGameOnServer(PaddleWinState winState)
+    {
+        unspawnObjects();
+
+        ulong? winnerClientId = null;
+        switch (winState)
+        {
+            case PaddleWinState.LeftWon:
+                winnerClientId = leftPaddle.OwnerClientId;
+                break;
+            case PaddleWinState.RightWon:
+                winnerClientId = rightPaddle.OwnerClientId;
+                break;
+        }
+
+        if (winnerClientId != null)
+        {
+            network.connectedPlayerScores[(ulong) winnerClientId]++;
+        }
+        
+        InvokeClientRpcOnEveryone(WinGameOnClient, winnerClientId);
+    }
+
+    [ClientRPC]
+    public void WinGameOnClient(ulong? winnerClientId)
+    {
+        if (winnerClientId == null)
+        {
+            canvas.showVictoryPanel(GameWinState.Tie);
+        }
+        else if (winnerClientId == NetworkingManager.Singleton.LocalClientId)
+        {
+            canvas.showVictoryPanel(GameWinState.Win);
+        }
+        else
+        {
+            canvas.showVictoryPanel(GameWinState.Loss);
+        }
+    }
+
+    protected void WinVsBotOnServer(PaddleWinState winState)
+    {
+        unspawnObjects();
+
+        InvokeClientRpcOnEveryone(WinVsBotOnClient, winState);
+    }
+
+    [ClientRPC]
+    public void WinVsBotOnClient(PaddleWinState winState)
+    {
+        switch(winState)
+        {
+            case PaddleWinState.LeftWon:
+                canvas.showVictoryPanel(GameWinState.Win);
+                break;
+            case PaddleWinState.RightWon:
+                canvas.showVictoryPanel(GameWinState.Loss);
+                break;
+            case PaddleWinState.Tie:
+                canvas.showVictoryPanel(GameWinState.Tie);
+                break;
+        }
+    }
+
+    [ServerRPC (RequireOwnership = false)]
+    public void WaitForClientsBeforeEnd()
+    {
+        playersReady++;
+        if (playersReady >= 2 || rightPaddle.IsBot())
+        {
+            endGame();
+        }
+    }
+
+    protected virtual void unspawnObjects()
     {
         ball.GetComponent<NetworkedObject>().UnSpawn();
+        Destroy(ball.gameObject);
+    }
+
+    /// <summary>
+    /// Override this function to customize what happens when the game ends.
+    /// Make sure to unspawn network objects.
+    /// </summary>
+    /// <param name="clientId"></param>
+    protected virtual void endGame()
+    {
         // Unspawn paddles and other things
         if (IsHost)
         {

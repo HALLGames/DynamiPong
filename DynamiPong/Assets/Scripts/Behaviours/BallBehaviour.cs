@@ -94,7 +94,10 @@ public class BallBehaviour : NetworkedBehaviour
 
         if (collision.transform.tag == "Paddle")
         {
-            paddleHit.Play();
+            if (paddleHit.enabled)
+            {
+                paddleHit.Play();
+            }
         }
 
         if (collision.transform.tag == "Wall")
@@ -102,12 +105,12 @@ public class BallBehaviour : NetworkedBehaviour
             wallHit.Play();
 
             // Prevent sticking to the wall
-            if (body.velocity.y >= 0 && body.velocity.y <= 1.5f)
+            if (transform.position.y >= 0 && Mathf.Abs(body.velocity.y) <= 1.5f)
             {
                 // Hit top wall with low velocity - launch down
                 body.velocity = new Vector2(body.velocity.x, -1.5f);
             }
-            else if (body.velocity.y <= 0 && body.velocity.y >= 1.5f)
+            else if (transform.position.y <= 0 && Mathf.Abs(body.velocity.y) <= 1.5f)
             {
                 // Hit bottom wall with low velocity - launch up
                 body.velocity = new Vector2(body.velocity.x, 1.5f);
