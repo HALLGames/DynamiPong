@@ -198,8 +198,7 @@ public class LobbyCanvas : MonoBehaviour
 
     public void updateLevelPreview()
     {
-        // TODO:
-        // levelPreview.sprite = 
+        levelPreview.sprite = Resources.Load<Sprite>("Images/" + levelDropdown.captionText.text);
     }
 
 

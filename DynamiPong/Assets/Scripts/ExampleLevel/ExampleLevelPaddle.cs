@@ -61,6 +61,16 @@ public class ExampleLevelPaddle : PaddleBehaviour
         // Left: Green
         // Right: Red
         Color color = onLeft ? Color.green : Color.red;
+        GetComponent<SpriteRenderer>().color = color;
+        InvokeClientRpcOnEveryone(SetColorOnClient, color);
+    }
+
+    public override void setupBot()
+    {
+        base.setupBot();
+
+        Color color = Color.red;
+        GetComponent<SpriteRenderer>().color = color;
         InvokeClientRpcOnEveryone(SetColorOnClient, color);
     }
 
