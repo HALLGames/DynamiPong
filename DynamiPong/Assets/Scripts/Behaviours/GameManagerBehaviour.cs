@@ -176,7 +176,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
 
         if (useBot)
         {
-            // Bot
+            // Bot - Positioned on the right
             rightPaddle = Instantiate(paddlePrefab);
             rightPaddle.setupBot();
             rightPaddle.init(false);
