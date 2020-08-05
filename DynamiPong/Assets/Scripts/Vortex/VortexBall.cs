@@ -25,20 +25,24 @@ public class VortexBall : BallBehaviour
     // Custom ball movement
     protected override void ballMovement()
     {
-        body.AddTorque(400);
         // Clamp x-velocity a little, in order to stop the ball from getting caught in the middle
         float normX = body.velocity.normalized.x;
-        if (normX > 0.1)
+        float normY = body.velocity.normalized.y;
+        if (body.position.x > 2f || body.position.x < -2f)
         {
-            normX = Mathf.Clamp(normX, 0.5f, 1f);
+            if (normX > 0.1)
+            {
+                normX = Mathf.Clamp(normX, 0.5f, 1f);
+            }
+            else
+            {
+                normX = Mathf.Clamp(normX, -1f, -0.5f);
+            }
         }
-        else
-        {
-            normX = Mathf.Clamp(normX, -1f, -0.5f);
-        }
+        
 
         // Keep velocity constant
-        body.velocity = new Vector2(normX, body.velocity.normalized.y) * speed;
+        body.velocity = new Vector2(normX, normY) * speed;
     }
 }
 
