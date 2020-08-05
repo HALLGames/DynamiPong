@@ -33,7 +33,7 @@ public class VortexSpin : NetworkedBehaviour
         {
             // Chance based logic
             float rand = UnityEngine.Random.value;
-            if (rand < 0.001)
+            if (rand < 0.002)
             {
                 ChangeSprite();
                 InvokeClientRpcOnEveryone(ChangeSpriteOnClient);
