@@ -34,12 +34,6 @@ public class LobbyCanvas : MonoBehaviour
         countdownText.text = string.Empty;
 
         initWinConDropdown();
-
-        // TODO: Auto-init the dropdown with levels
-        // initDropdown();
-
-        // TODO: Level previews
-        // levelPreview =
     }
 
     private void initWinConDropdown()
@@ -56,11 +50,11 @@ public class LobbyCanvas : MonoBehaviour
                 case GameInfo.WinCondition.Freeplay:
                     optionText = "Freeplay (no limit)";
                     break;
-                case GameInfo.WinCondition.FirstTo15:
-                    optionText = "First to 15 pts.";
+                case GameInfo.WinCondition.FirstTo10:
+                    optionText = "First to 10 pts.";
                     break;
-                case GameInfo.WinCondition.FirstTo30:
-                    optionText = "First to 30 pts.";
+                case GameInfo.WinCondition.FirstTo20:
+                    optionText = "First to 20 pts.";
                     break;
                 case GameInfo.WinCondition.MostAfter5:
                     optionText = "Most after 5 min.";
@@ -200,25 +194,4 @@ public class LobbyCanvas : MonoBehaviour
     {
         levelPreview.sprite = Resources.Load<Sprite>("Images/" + levelDropdown.captionText.text);
     }
-
-
-    // Not in use
-    // Auto-generate level names from Scenes/Levels path and put them in the dropdown 
-    //public void initDropdown()
-    //{
-    //    string directoryPath = "Assets/Scenes/Levels/";
-    //    string[] files = Directory.GetFiles(directoryPath);
-    //    for (int i = 0; i < files.Length; i++)
-    //    {
-    //        string fileName = files[i];
-    //        fileName = fileName.Substring(directoryPath.Length);
-    //        string[] fileSplit = fileName.Split('.');
-    //        if (fileSplit[1] == "unity")
-    //        {
-    //            fileName = fileName.Split('.')[0];
-    //            if (fileName != "TemplateLevel" || fileName != "ExampleLevel")
-    //                levelDropdown.options.Add(new Dropdown.OptionData(fileName));
-    //        }
-    //    }   
-    //}
 }

@@ -46,6 +46,12 @@ public class LobbyManager : NetworkedBehaviour
             connected = NetworkingManager.Singleton.ConnectedClientsList.Count;
             TellClientsToUpdateUI();
         }
+
+        if (IsClient)
+        {
+            // Timeout after 5 minutes in lobby
+            Invoke("OnDisconnectButton", 300);
+        }
     }
 
     //--------------------------------------------
@@ -77,15 +83,12 @@ public class LobbyManager : NetworkedBehaviour
         {
             InvokeClientRpcOnEveryoneExcept(OnDisconnectButton, OwnerClientId);
             canvas.disableUI();
+            Destroy(gameInfo.gameObject);
             StartCoroutine(disconnectHost());
         } 
         else
         {
-            // Destroy old network
-            Destroy(GameObject.FindGameObjectWithTag("Network"));
-
-            // Go back
-            SceneManager.LoadScene("Connection");
+            disconnect();
         }
     }
 
@@ -148,6 +151,11 @@ public class LobbyManager : NetworkedBehaviour
     {
         yield return new WaitForSeconds(0.5f);
 
+        disconnect();
+    }
+
+    private void disconnect()
+    {
         // Destroy old network
         Destroy(GameObject.FindGameObjectWithTag("Network"));
 

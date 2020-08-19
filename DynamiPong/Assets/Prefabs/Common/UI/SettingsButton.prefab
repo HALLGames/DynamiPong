@@ -221,4 +221,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53d919726dcc4d94ca09d4e47e4a9e2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  guiSkin: {fileID: 11400000, guid: ae84f4e94fd848a4aa767068676a2556, type: 2}
+  settingsPanelPrefab: {fileID: 8323954296548243202, guid: 8cf95d24461114845bdfb97f47774d5b,
+    type: 3}

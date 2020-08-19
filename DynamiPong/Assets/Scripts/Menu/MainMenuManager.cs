@@ -9,6 +9,14 @@ public class MainMenuManager : MonoBehaviour
 
     private MainMenuCanvas mainMenuCanvas;
 
+    private void Awake()
+    {
+        if(Application.isBatchMode)
+        {
+            SceneManager.LoadScene("Connection");
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,12 +30,6 @@ public class MainMenuManager : MonoBehaviour
             menuMusicObject = Instantiate(menuMusic).gameObject;
             DontDestroyOnLoad(menuMusicObject);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void OnStartButton()
