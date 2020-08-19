@@ -4,7 +4,6 @@ using UnityEngine;
 using MLAPI;
 using System.Collections.Generic;
 using MLAPI.SceneManagement;
-using UnityEngine.UI;
 using MLAPI.Transports.UNET;
 
 public class Network : MonoBehaviour
@@ -29,22 +28,46 @@ public class Network : MonoBehaviour
             menuMusicObject = Instantiate(menuMusic).gameObject;
             DontDestroyOnLoad(menuMusicObject);
         }
+
+        // Add scene switch callback
+        NetworkSceneManager.OnSceneSwitched += OnSceneSwitch;
+
+        if (Application.isBatchMode)
+        {
+            // Launch server if headless
+            launchServer();
+        }
     }
 
-    public void OnConnectClick()
-    { 
-        if(canvas.hasValidPortInput())
-        {
-            // Change transport
-            UnetTransport transport = GetComponent<UnetTransport>();
-            transport.ConnectAddress = canvas.addressField.text;
-            transport.ConnectPort = Convert.ToInt32(canvas.portField.text);
-        } else
-        {
-            return;
-        }
-        canvas.disableUI();
+    private void launchServer()
+    {
+        UnetTransport transport = GetComponent<UnetTransport>();
+        transport.ConnectAddress = "";
+        transport.ConnectPort = 7777;
 
+        startServer();
+
+        NetworkSceneManager.SwitchScene("Lobby");
+    }
+
+    public void connect()
+    {
+        // Change transport
+        UnetTransport transport = GetComponent<UnetTransport>();
+        transport.ConnectAddress = canvas.addressField.text;
+        transport.ConnectPort = Convert.ToInt32(canvas.portField.text);
+
+        startConnection();
+
+        // Enter Lobby
+        if (IsServer())
+        {
+            NetworkSceneManager.SwitchScene("Lobby");
+        }
+    }
+
+    private void startConnection()
+    {
         if (Application.isEditor)
         {
             // Only data path to launch while in Editor
@@ -63,26 +86,17 @@ public class Network : MonoBehaviour
             {
                 startHost();
             }
-        } 
+        }
         else // Launched from Binary
         {
             if (canvas.hostToggle.isOn)
             {
                 startHost();
-            } 
+            }
             else
             {
                 startClient();
             }
-        }
-
-        // Destroy menu music
-        Destroy(GameObject.FindGameObjectWithTag("BackgroundMusic"));
-
-        // Enter Lobby
-        if (IsServer())
-        {
-            NetworkSceneManager.SwitchScene("Lobby");
         }
     }
 
@@ -173,6 +187,12 @@ public class Network : MonoBehaviour
             NetworkingManager.Singleton.StopHost();
         }
         
+    }
+
+    public void OnSceneSwitch()
+    {
+        // Destroy menu music
+        Destroy(GameObject.FindGameObjectWithTag("BackgroundMusic"));
     }
 
     //-------------------------------------------------------

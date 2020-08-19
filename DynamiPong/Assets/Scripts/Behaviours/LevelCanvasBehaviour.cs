@@ -48,11 +48,11 @@ public class LevelCanvasBehaviour : MonoBehaviour
             case GameInfo.WinCondition.Freeplay:
                 text = "Freeplay";
                 break;
-            case GameInfo.WinCondition.FirstTo15:
-                text += "First To 15 Points";
+            case GameInfo.WinCondition.FirstTo10:
+                text += "First To 10 Points";
                 break;
-            case GameInfo.WinCondition.FirstTo30:
-                text += "First To 30 Points";
+            case GameInfo.WinCondition.FirstTo20:
+                text += "First To 20 Points";
                 break;
             case GameInfo.WinCondition.MostAfter5:
                 text += "Most Points After 5 Minutes";

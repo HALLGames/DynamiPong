@@ -126,11 +126,11 @@ public class GameManagerBehaviour : NetworkedBehaviour
     {
         switch(winCon)
         {
-            case GameInfo.WinCondition.FirstTo15:
-                winScore = 15;
+            case GameInfo.WinCondition.FirstTo10:
+                winScore = 10;
                 break;
-            case GameInfo.WinCondition.FirstTo30:
-                winScore = 30;
+            case GameInfo.WinCondition.FirstTo20:
+                winScore = 20;
                 break;
             case GameInfo.WinCondition.MostAfter5:
                 canvas.timer.start(5 * 60);
