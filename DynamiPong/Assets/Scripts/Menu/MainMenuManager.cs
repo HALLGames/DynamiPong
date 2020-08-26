@@ -24,7 +24,7 @@ public class MainMenuManager : MonoBehaviour
         mainMenuCanvas.creditsPanel.gameObject.SetActive(false);
 
         // If there is no background music, create it
-        GameObject menuMusicObject = GameObject.FindGameObjectWithTag("BackgroundMusic");
+        GameObject menuMusicObject = GameObject.FindGameObjectWithTag("MenuMusic");
         if (menuMusicObject == null)
         {
             menuMusicObject = Instantiate(menuMusic).gameObject;

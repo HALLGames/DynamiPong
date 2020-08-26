@@ -1,12 +1,9 @@
-﻿using MLAPI;
-using MLAPI.Transports.UNET;
-using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using MLAPI;
 
 public class ConnectionCanvas : MonoBehaviour
 {
@@ -15,38 +12,28 @@ public class ConnectionCanvas : MonoBehaviour
     public InputField addressField;
     public InputField portField;
     public Dropdown addressDropdown;
+    public Dropdown portDropdown;
     public Toggle hostToggle;
     public Button connectButton;
-    public Button backButton;
     public Text connectingText;
     public Text errorText;
 
     private Network network;
-    private string localhostAddress = "127.0.0.1";
-    private string localNetworkAddress;
-    private string serverAddress;
-    private string defaultPort = "7777";
 
     // Start is called before the first frame update
     void Start()
     {
         network = FindObjectOfType<Network>();
-        updateAddresses();
-        InvokeRepeating("updateAddresses", 15, 15);
 
         // UI Init
         hostToggle.isOn = false;
         errorText.text = "";
-        portField.text = defaultPort;
-        updateAddress();
-        connectButton.onClick.AddListener(OnConnectClick);
-        addressDropdown.onValueChanged.AddListener((int i) => updateAddress());
-    }
+        portField.text = network.defaultPort.ToString();
 
-    public void OnHostToggle()
-    {
-        addressField.interactable = false;
-        portField.interactable = false;
+        OnAddressDropdownChanged();
+        connectButton.onClick.AddListener(OnConnectClick);
+        addressDropdown.onValueChanged.AddListener((int i) => OnAddressDropdownChanged());
+        portDropdown.onValueChanged.AddListener((int i) => OnPortDropdownChanged());
     }
 
     public void OnBackButton()
@@ -62,10 +49,22 @@ public class ConnectionCanvas : MonoBehaviour
         connectButton.onClick.RemoveAllListeners();
         connectButton.onClick.AddListener(OnCancelClick);
         toggleConnecting(true);
-        network.connect();
 
-        // Timeout 
-        Invoke("timeoutConnection", 30);
+        // Add name to Connection Data
+        byte[] connectionData = System.Text.Encoding.Default.GetBytes(nameField.text);
+        NetworkingManager.Singleton.NetworkConfig.ConnectionData = connectionData;
+
+        if (hostToggle.isOn)
+        {
+            network.connect(addressField.text, int.Parse(portField.text), Network.NetworkType.Host);
+        } 
+        else
+        {
+            network.connect(addressField.text, int.Parse(portField.text), Network.NetworkType.Client);
+        }   
+
+        // Timeout after 20 seconds
+        Invoke("timeoutConnection", 20);
     }
 
     public void OnCancelClick()
@@ -76,27 +75,60 @@ public class ConnectionCanvas : MonoBehaviour
         network.CancelConnection();
     }
 
-    public void updateAddress()
+    public void OnAddressDropdownChanged()
     {
-        addressField.interactable = false;
-        hostToggle.interactable = false;
         switch (addressDropdown.value)
         {
-            case 0:
-                addressField.text = serverAddress;
+            case 0: // Server
+                addressField.text = network.serverAddress;
+                addressField.interactable = false;
+                portDropdown.gameObject.SetActive(true);
+                portField.interactable = false;
+                OnPortDropdownChanged();
+                hostToggle.interactable = false;
                 break;
-            case 1:
-                addressField.text = localNetworkAddress;
+            case 1: // Local Network
+                addressField.text = network.localNetworkAddress;
+                addressField.interactable = false;
+                portDropdown.gameObject.SetActive(false);
+                portField.text = network.defaultPort.ToString();
+                portField.interactable = true;
                 hostToggle.interactable = true;
                 break;
-            case 2:
-                addressField.text = localhostAddress;
+            case 2: // Localhost
+                addressField.text = network.localhostAddress;
+                addressField.interactable = false;
+                portDropdown.gameObject.SetActive(false);
+                portField.text = network.defaultPort.ToString();
+                portField.interactable = true;
                 hostToggle.interactable = true;
                 break;
-            case 3:
+            case 3: // Custom
                 addressField.text = "";
                 addressField.interactable = true;
-                hostToggle.interactable = false;
+                portDropdown.gameObject.SetActive(false);
+                portField.text = network.defaultPort.ToString();
+                portField.interactable = true;
+                hostToggle.interactable = true;
+                break;
+        }
+    }
+
+    public void OnPortDropdownChanged()
+    {
+        switch (portDropdown.value)
+        {
+            case 0: // Server
+                portField.text = "7777";
+                break;
+            case 1: // Local Network
+                portField.text = "7778";
+                break;
+            case 2: // Localhost
+                portField.text = "7779";
+                break;
+            case 3: // Custom
+                portField.text = "7780";
                 break;
         }
     }
@@ -121,27 +153,7 @@ public class ConnectionCanvas : MonoBehaviour
         {
             connectingText.text = "Connect";
             errorText.text = "";
-            updateAddress();
-        }
-    }
-
-    private void updateAddresses()
-    {
-        if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
-        {
-            // Get local IPv4 address
-            IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
-            localNetworkAddress = entry.AddressList[entry.AddressList.Length - 1].ToString();
-
-            // Get server address
-            serverAddress = "192.168.42.17";
-        }
-        else
-        {
-            // No network connection
-            localNetworkAddress = localhostAddress;
-            serverAddress = localhostAddress;
-            errorText.text = "No network connection available.";
+            OnAddressDropdownChanged();
         }
     }
 

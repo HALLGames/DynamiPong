@@ -5,59 +5,41 @@ using MLAPI;
 using System.Collections.Generic;
 using MLAPI.SceneManagement;
 using MLAPI.Transports.UNET;
+using System.Net;
 
 public class Network : MonoBehaviour
 {
-    public AudioSource menuMusic;
+    public enum NetworkType { None, Client, Server, Host }
 
     public Dictionary<ulong, int> connectedPlayerScores;
     private Dictionary<ulong, string> connectedPlayerNames;
-    private ConnectionCanvas canvas;
+
+    public string localhostAddress { get => "127.0.0.1"; }
+    public string localNetworkAddress { get => getLocalNetworkAddress(); }
+    public string serverAddress { get => "192.168.42.17"; } 
+    public int defaultPort { get => 7777; } 
 
     // Start is called before the first frame update
     void Start()
     {
-        canvas = FindObjectOfType<ConnectionCanvas>();
         connectedPlayerNames = new Dictionary<ulong, string>();
         connectedPlayerScores = new Dictionary<ulong, int>();
-
-        // If there is no background music, create it
-        GameObject menuMusicObject = GameObject.FindGameObjectWithTag("BackgroundMusic");
-        if (menuMusicObject == null)
-        {
-            menuMusicObject = Instantiate(menuMusic).gameObject;
-            DontDestroyOnLoad(menuMusicObject);
-        }
-
-        // Add scene switch callback
-        NetworkSceneManager.OnSceneSwitched += OnSceneSwitch;
 
         if (Application.isBatchMode)
         {
             // Launch server if headless
-            launchServer();
+            connect(getServerAddress(), getPort(), NetworkType.Server);
         }
     }
 
-    private void launchServer()
-    {
-        UnetTransport transport = GetComponent<UnetTransport>();
-        transport.ConnectAddress = "";
-        transport.ConnectPort = 7777;
-
-        startServer();
-
-        NetworkSceneManager.SwitchScene("Lobby");
-    }
-
-    public void connect()
+    public void connect(string address, int port, NetworkType networkType)
     {
         // Change transport
         UnetTransport transport = GetComponent<UnetTransport>();
-        transport.ConnectAddress = canvas.addressField.text;
-        transport.ConnectPort = Convert.ToInt32(canvas.portField.text);
+        transport.ConnectAddress = address;
+        transport.ConnectPort = port;
 
-        startConnection();
+        startConnection(networkType);
 
         // Enter Lobby
         if (IsServer())
@@ -66,46 +48,24 @@ public class Network : MonoBehaviour
         }
     }
 
-    private void startConnection()
+    private void startConnection(NetworkType networkType)
     {
-        if (Application.isEditor)
+        switch(networkType)
         {
-            // Only data path to launch while in Editor
-            string dataPathNormalized = Application.dataPath.ToUpperInvariant();
-
-            // Start in server or client mode
-            if (dataPathNormalized.Contains("CLIENT"))// Are we running as a client?
-            {
-                startClient();
-            }
-            else if (dataPathNormalized.Contains("SERVER")) // Are we running as a server?
-            {
+            case NetworkType.Client:
+                startHost();
+                break;
+            case NetworkType.Server:
                 startServer();
-            }
-            else // Else: Run as the host
-            {
+                break;
+            case NetworkType.Host:
                 startHost();
-            }
-        }
-        else // Launched from Binary
-        {
-            if (canvas.hostToggle.isOn)
-            {
-                startHost();
-            }
-            else
-            {
-                startClient();
-            }
+                break;
         }
     }
 
     public void startClient()
     {
-        // Add name to Connection Data
-        byte[] connectionData = System.Text.Encoding.Default.GetBytes(canvas.nameField.text);
-
-        NetworkingManager.Singleton.NetworkConfig.ConnectionData = connectionData;
         NetworkingManager.Singleton.StartClient();
     }
 
@@ -120,26 +80,23 @@ public class Network : MonoBehaviour
         NetworkingManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
         NetworkingManager.Singleton.StartHost();
 
-        // Add name because approval is not called for the host
-        if (canvas != null)
-        {
-            addConnectedPlayer(NetworkingManager.Singleton.LocalClientId, canvas.nameField.text);
-        }
+        // Check Approval manually because host mode doesn't do it
+        ApprovalCheck(NetworkingManager.Singleton.NetworkConfig.ConnectionData, NetworkingManager.Singleton.LocalClientId, null);
     }
 
     // Gets approval and puts name into the list
     private void ApprovalCheck(byte[] connectionData, ulong clientId, NetworkingManager.ConnectionApprovedDelegate callback)
     {
         // Approve if there are one or fewer players and if the client hasn't already connected
-        bool approve = NetworkingManager.Singleton.ConnectedClientsList.Count <= 1 && !connectedPlayerNames.ContainsKey(clientId);
+        bool approved = NetworkingManager.Singleton.ConnectedClientsList.Count <= 1 && !connectedPlayerNames.ContainsKey(clientId);
 
-        if (approve)
+        if (approved)
         {
             string name = System.Text.Encoding.Default.GetString(connectionData);
             addConnectedPlayer(clientId, name);
         }
 
-        callback(false, null, approve, null, null);
+        callback?.Invoke(false, null, approved, null, null);
     }
 
     // Puts name in dictionary with clientId as the key
@@ -148,7 +105,7 @@ public class Network : MonoBehaviour
         // If name is empty, call them "PlayerX", where X is the player count
         if (name == "")
         {
-            name = "Player" + connectedPlayerNames.Count.ToString();
+            name = "Player" + (connectedPlayerNames.Count + 1);
         }
 
         // If names are the same, add "(n)" after it, n increments.
@@ -179,20 +136,55 @@ public class Network : MonoBehaviour
         if (IsClient())
         {
             NetworkingManager.Singleton.StopClient();
-        } else if (IsServer())
+        } 
+        else if (IsServer())
         {
             NetworkingManager.Singleton.StopServer();
-        } else if (IsHost())
+        } 
+        else if (IsHost())
         {
             NetworkingManager.Singleton.StopHost();
         }
-        
     }
 
-    public void OnSceneSwitch()
+
+    private string getLocalNetworkAddress()
     {
-        // Destroy menu music
-        Destroy(GameObject.FindGameObjectWithTag("BackgroundMusic"));
+        if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
+        {
+            // Get local IPv4 address
+            IPHostEntry entry = Dns.GetHostEntry(Dns.GetHostName());
+            return entry.AddressList[entry.AddressList.Length - 1].ToString();
+        }
+        return localhostAddress;
+    }
+
+    private string getServerAddress()
+    {
+        string addressString = GetArgumentValue("-address");
+        if (addressString != null)
+        {
+            return addressString;
+        }
+        return serverAddress;
+    }
+
+    private int getPort()
+    {
+        string portString = GetArgumentValue("-port");
+        int port = defaultPort;
+        if (portString != null)
+        {
+            try
+            {
+                port = int.Parse(portString);
+            } 
+            catch(Exception)
+            {
+                
+            }
+        }
+        return port;
     }
 
     //-------------------------------------------------------
@@ -246,28 +238,44 @@ public class Network : MonoBehaviour
     }
 
     /// <summary>
-    /// Return network type name.
+    /// Return network type.
     /// </summary>
-    /// <returns>Server, Client or Host. Returns Unknown if type could not be determined.</returns>
-    public static string NetworkType()
+    /// <returns>Server, Client or Host. Returns None if type could not be determined.</returns>
+    public static NetworkType GetNetworkType()
     {
+        if (IsHost())
+        {
+            return NetworkType.Host;
+        }
         if (IsServer())
         {
-            if (IsClient())
-            {
-                return "Host";
-            }
-            else
-            {
-                return "Server";
-            }
+            return NetworkType.Server;
         }
-
         if (IsClient())
         {
-            return "Client";
+            return NetworkType.Client;
         }
 
-        return "Unknown";
+        return NetworkType.None;
+    }
+
+
+    /// <summary>
+    /// Gets the value given for the given command line argument
+    /// </summary>
+    /// <param name="argument">The name of the argument</param>
+    /// <returns>The value for the argument. Returns null if argument not found.</returns>
+    /// Code from https://stackoverflow.com/questions/39843039/game-development-how-could-i-pass-command-line-arguments-to-a-unity-standalo
+    public static string GetArgumentValue(string argument)
+    {
+        string[] args = Environment.GetCommandLineArgs();
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == argument && args.Length > i + 1)
+            {
+                return args[i + 1];
+            }
+        }
+        return null;
     }
 }

@@ -33,6 +33,13 @@ public class LobbyManager : NetworkedBehaviour
         canvas.updateConnectedPanel(readyPlayers);
         canvas.initHostPanel(IsHost);
 
+        // Destroy main menu music
+        GameObject music = GameObject.FindGameObjectWithTag("MenuMusic");
+        if (music != null)
+        {
+            Destroy(music);
+        }
+
         if (IsServer)
         {
             // Call callbacks to track connections
