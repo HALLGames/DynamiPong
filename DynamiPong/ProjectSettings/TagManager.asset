@@ -12,6 +12,7 @@ TagManager:
   - Network
   - Powerup
   - BackgroundMusic
+  - MenuMusic
   layers:
   - Default
   - TransparentFX
