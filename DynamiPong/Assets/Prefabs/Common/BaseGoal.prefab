@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 773964131203640080}
   - component: {fileID: 1405549123530515601}
   m_Layer: 0
-  m_Name: Goal
+  m_Name: BaseGoal
   m_TagString: Goal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

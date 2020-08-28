@@ -37,6 +37,11 @@ public class GameManagerBehaviour : NetworkedBehaviour
     [SyncedVar]
     protected string rightName;
 
+    // Sound
+    protected AudioSource wallHit;
+    protected AudioSource paddleHit;
+    protected AudioSource goalHit;
+
     // End of Game
     public enum PaddleWinState { LeftWon, RightWon, Tie}
     public enum GameWinState { Win, Loss, Tie}
@@ -76,6 +81,9 @@ public class GameManagerBehaviour : NetworkedBehaviour
 
         // Add concede button listener
         canvas.concedeButton.onClick.AddListener(OnConcedeButton);
+
+        // Sound
+        initSound();
 
         if (IsServer)
         {
@@ -120,6 +128,24 @@ public class GameManagerBehaviour : NetworkedBehaviour
         backgroundMusic.clip = Resources.Load<AudioClip>("Sound/Music/BackgroundMusic");
         backgroundMusic.loop = true;
         backgroundMusic.Play();
+    }
+
+    /// <summary>
+    /// Override this method to customize what sounds are played
+    /// </summary>
+    protected virtual void initSound()
+    {
+        // initializes the wall hit and paddle hit sound effects
+        wallHit = gameObject.AddComponent<AudioSource>();
+        wallHit.clip = Resources.Load<AudioClip>("Sound/Common/WallHit");
+
+        paddleHit = gameObject.AddComponent<AudioSource>();
+        paddleHit.clip = Resources.Load<AudioClip>("Sound/Common/PaddleHit");
+
+        // initializes the goal hit and paddle hit sound effects
+        goalHit = gameObject.AddComponent<AudioSource>();
+        goalHit.clip = Resources.Load<AudioClip>("Sound/Common/GoalHit");
+        goalHit.volume = 0.5f;
     }
 
     protected void initWinCon()
@@ -169,7 +195,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         // Paddle 1 - Positioned on the left
 
         ulong clientId = NetworkingManager.Singleton.ConnectedClientsList[0].ClientId;
-        leftPaddle = Instantiate<PaddleBehaviour>(paddlePrefab, Vector3.zero, Quaternion.identity);
+        leftPaddle = Instantiate(paddlePrefab, Vector3.zero, Quaternion.identity);
         leftPaddle.GetComponent<NetworkedObject>().SpawnWithOwnership(clientId);
         leftPaddle.init(true);
         leftName = network.getConnectedPlayerNames()[clientId];
@@ -178,6 +204,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         {
             // Bot - Positioned on the right
             rightPaddle = Instantiate(paddlePrefab);
+            rightPaddle.GetComponent<NetworkedObject>().Spawn();
             rightPaddle.setupBot();
             rightPaddle.init(false);
             rightName = "Bot";
@@ -186,7 +213,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         {
             // Paddle 2 - Positioned on the right
             clientId = NetworkingManager.Singleton.ConnectedClientsList[1].ClientId;
-            rightPaddle = Instantiate<PaddleBehaviour>(paddlePrefab, Vector3.zero, Quaternion.identity);
+            rightPaddle = Instantiate(paddlePrefab, Vector3.zero, Quaternion.identity);
             rightPaddle.GetComponent<NetworkedObject>().SpawnWithOwnership(clientId);
             rightPaddle.init(false);
             rightName = network.getConnectedPlayerNames()[clientId];
@@ -214,6 +241,44 @@ public class GameManagerBehaviour : NetworkedBehaviour
             ball.GetComponent<NetworkedObject>().UnSpawn();
             Destroy(ball.gameObject);
             spawnBall();
+        }
+    }
+
+    //-----------------------------------------------
+    // Sound
+    //-----------------------------------------------
+
+    public void PlaySound(string tag)
+    {
+        if (IsServer)
+        {
+            InvokeClientRpcOnEveryone(PlaySoundOnClient, tag);
+        }
+    }
+
+    [ClientRPC]
+    public void PlaySoundOnClient(string tag)
+    {
+        if (tag == "Paddle")
+        {
+            if (paddleHit.enabled)
+            {
+                paddleHit.Play();
+            }
+        }
+        else if (tag == "Wall")
+        {
+            if (wallHit.enabled)
+            {
+                wallHit.Play();
+            }
+        }
+        else if (tag == "Goal")
+        {
+            if (goalHit.enabled)
+            {
+                goalHit.Play();
+            }
         }
     }
 
@@ -294,6 +359,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         }
     }
 
+    // Determine who wins after time is up
     protected void TimeOutScore()
     {
         if (rightPaddle.IsBot())
@@ -331,6 +397,14 @@ public class GameManagerBehaviour : NetworkedBehaviour
     // End of Game
     //-----------------------------------------------
 
+    private void OnApplicationQuit()
+    {
+        if (IsServer)
+        {
+            InvokeClientRpcOnEveryone(OnDisconnectButton);
+        }
+    }
+
     [ClientRPC]
     public void OnDisconnectButton()
     {
@@ -340,8 +414,14 @@ public class GameManagerBehaviour : NetworkedBehaviour
             InvokeClientRpcOnEveryoneExcept(OnDisconnectButton, OwnerClientId);
         }
 
+        if (NetworkingManager.Singleton.IsConnectedClient)
+        {
+            NetworkingManager.Singleton.StopClient();
+        }
+
         // Destroy old network
         Destroy(GameObject.FindGameObjectWithTag("Network"));
+
         // Go back
         SceneManager.LoadScene("Connection");
     }
@@ -486,16 +566,13 @@ public class GameManagerBehaviour : NetworkedBehaviour
     protected virtual void endGame()
     {
         // Unspawn paddles and other things
-        if (IsHost)
-        {
-            leftPaddle.GetComponent<NetworkedObject>().UnSpawn();
+        leftPaddle.GetComponent<NetworkedObject>().UnSpawn();
+        Destroy(leftPaddle.gameObject);
+        rightPaddle.GetComponent<NetworkedObject>().UnSpawn();
+        Destroy(rightPaddle.gameObject);
 
-            NetworkedObject rightPaddleNetwork = rightPaddle.GetComponent<NetworkedObject>();
-            if (rightPaddleNetwork.IsSpawned)
-            {
-                rightPaddleNetwork.UnSpawn();
-            }
-        }
+        // Remove callbacks
+        NetworkingManager.Singleton.OnClientDisconnectCallback -= clientDisconnectCallback;
 
         NetworkSceneManager.SwitchScene("Lobby");
     }

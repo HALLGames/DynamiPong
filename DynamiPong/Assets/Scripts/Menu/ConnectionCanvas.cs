@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MLAPI;
+using System;
 
 public class ConnectionCanvas : MonoBehaviour
 {
@@ -29,9 +30,18 @@ public class ConnectionCanvas : MonoBehaviour
         hostToggle.isOn = false;
         errorText.text = "";
         portField.text = network.defaultPort.ToString();
+        initAddressDropdown();
+        connectButton.onClick.AddListener(OnConnectClick);
+    }
+
+    private void initAddressDropdown()
+    {
+        string[] enumNames = Enum.GetNames(typeof(Network.ConnectionType));
+        List<string> connectionTypeList = new List<string>(enumNames);
+        addressDropdown.ClearOptions();
+        addressDropdown.AddOptions(connectionTypeList);
 
         OnAddressDropdownChanged();
-        connectButton.onClick.AddListener(OnConnectClick);
         addressDropdown.onValueChanged.AddListener((int i) => OnAddressDropdownChanged());
         portDropdown.onValueChanged.AddListener((int i) => OnPortDropdownChanged());
     }
@@ -73,13 +83,23 @@ public class ConnectionCanvas : MonoBehaviour
         connectButton.onClick.AddListener(OnConnectClick);
         toggleConnecting(false);
         network.CancelConnection();
+        CancelInvoke();
     }
 
     public void OnAddressDropdownChanged()
     {
+        // Default values (Custom)
+        addressField.text = "";
+        addressField.interactable = true;
+        portDropdown.gameObject.SetActive(false);
+        portField.text = network.defaultPort.ToString();
+        portField.interactable = true;
+        hostToggle.interactable = true;
+
+        // Change UI based on selected connection
         switch (addressDropdown.value)
         {
-            case 0: // Server
+            case (int)Network.ConnectionType.Server:
                 addressField.text = network.serverAddress;
                 addressField.interactable = false;
                 portDropdown.gameObject.SetActive(true);
@@ -87,29 +107,15 @@ public class ConnectionCanvas : MonoBehaviour
                 OnPortDropdownChanged();
                 hostToggle.interactable = false;
                 break;
-            case 1: // Local Network
+            case (int)Network.ConnectionType.LocalNetwork:
                 addressField.text = network.localNetworkAddress;
                 addressField.interactable = false;
-                portDropdown.gameObject.SetActive(false);
-                portField.text = network.defaultPort.ToString();
-                portField.interactable = true;
-                hostToggle.interactable = true;
                 break;
-            case 2: // Localhost
+            case (int)Network.ConnectionType.Localhost:
                 addressField.text = network.localhostAddress;
                 addressField.interactable = false;
-                portDropdown.gameObject.SetActive(false);
-                portField.text = network.defaultPort.ToString();
-                portField.interactable = true;
-                hostToggle.interactable = true;
                 break;
-            case 3: // Custom
-                addressField.text = "";
-                addressField.interactable = true;
-                portDropdown.gameObject.SetActive(false);
-                portField.text = network.defaultPort.ToString();
-                portField.interactable = true;
-                hostToggle.interactable = true;
+            case (int)Network.ConnectionType.Custom:
                 break;
         }
     }
@@ -141,6 +147,7 @@ public class ConnectionCanvas : MonoBehaviour
         nameField.interactable = !isConnecting;
         portField.interactable = !isConnecting;
         addressDropdown.interactable = !isConnecting;
+        portDropdown.interactable = !isConnecting;
 
         if (isConnecting)
         {

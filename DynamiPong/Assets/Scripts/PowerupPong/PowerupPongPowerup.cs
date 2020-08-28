@@ -15,7 +15,7 @@ public class PowerupPongPowerup : NetworkedBehaviour
     public float modifier;
 
     private PowerupPongPowerupManager powerupManager;
-    private new SpriteRenderer renderer;
+    private SpriteRenderer spriteRenderer;
 
     // Start is called before the first frame update
     void Start()
@@ -30,7 +30,7 @@ public class PowerupPongPowerup : NetworkedBehaviour
 
         // Find objects
         powerupManager = FindObjectOfType<PowerupPongPowerupManager>();
-        renderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (IsServer)
         {
@@ -95,7 +95,7 @@ public class PowerupPongPowerup : NetworkedBehaviour
         this.power = power;
         modifier = powerupManager.getModifier(power);
         duration = powerupManager.getDuration(power);
-        renderer.sprite = powerupManager.getSprite(power);
+        spriteRenderer.sprite = powerupManager.getSprite(power);
     }
 
     [ClientRPC]

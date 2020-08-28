@@ -25,7 +25,7 @@ public class LobbyManager : NetworkedBehaviour
         // init vars
         readyPlayers = new List<ulong>();
 
-        // Find the canvas. Initialize because it gets updated before Start().
+        // Find the canvas.
         canvas = FindObjectOfType<LobbyCanvas>();
         canvas.initialize();
 
@@ -86,16 +86,16 @@ public class LobbyManager : NetworkedBehaviour
     [ClientRPC]
     public void OnDisconnectButton()
     {
-        if (IsHost)
+        if (IsServer)
         {
             InvokeClientRpcOnEveryoneExcept(OnDisconnectButton, OwnerClientId);
             canvas.disableUI();
             Destroy(gameInfo.gameObject);
-            StartCoroutine(disconnectHost());
+            StartCoroutine(DisconnectWithDelay());
         } 
         else
         {
-            disconnect();
+            DisconnectOnClient();
         }
     }
 
@@ -154,22 +154,6 @@ public class LobbyManager : NetworkedBehaviour
         canvas.botButton.interactable = connected < 2; // Bot button disabled if there are two or more players
     }
 
-    private IEnumerator disconnectHost()
-    {
-        yield return new WaitForSeconds(0.5f);
-
-        disconnect();
-    }
-
-    private void disconnect()
-    {
-        // Destroy old network
-        Destroy(GameObject.FindGameObjectWithTag("Network"));
-
-        // Go back
-        SceneManager.LoadScene("Connection");
-    }
-
     // A client wants to play with bot
     [ServerRPC(RequireOwnership = false)]
     public void StartBotModeOnServer()
@@ -188,6 +172,40 @@ public class LobbyManager : NetworkedBehaviour
         Invoke("SwitchScene", delay);
 
         gameInfo.winCon = (GameInfo.WinCondition)canvas.winConDropdown.value;
+    }
+
+    //--------------------------------------------
+    // Disconnecting
+    //--------------------------------------------
+
+    private IEnumerator DisconnectWithDelay()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        DisconnectOnClient();
+    }
+
+    private void DisconnectOnClient()
+    {
+        // Disconnect from network
+        if (NetworkingManager.Singleton.IsConnectedClient)
+        {
+            NetworkingManager.Singleton.StopClient();
+        }
+
+        // Destroy old network
+        Destroy(GameObject.FindGameObjectWithTag("Network"));
+
+        // Go back
+        SceneManager.LoadScene("Connection");
+    }
+
+    private void OnApplicationQuit()
+    {
+        if (IsServer)
+        {
+            InvokeClientRpcOnEveryone(OnDisconnectButton);
+        }
     }
 
     //--------------------------------------------
