@@ -397,6 +397,14 @@ public class GameManagerBehaviour : NetworkedBehaviour
     // End of Game
     //-----------------------------------------------
 
+    private void OnApplicationQuit()
+    {
+        if (IsServer)
+        {
+            InvokeClientRpcOnEveryone(OnDisconnectButton);
+        }
+    }
+
     [ClientRPC]
     public void OnDisconnectButton()
     {
@@ -406,8 +414,14 @@ public class GameManagerBehaviour : NetworkedBehaviour
             InvokeClientRpcOnEveryoneExcept(OnDisconnectButton, OwnerClientId);
         }
 
+        if (NetworkingManager.Singleton.IsConnectedClient)
+        {
+            NetworkingManager.Singleton.StopClient();
+        }
+
         // Destroy old network
         Destroy(GameObject.FindGameObjectWithTag("Network"));
+
         // Go back
         SceneManager.LoadScene("Connection");
     }

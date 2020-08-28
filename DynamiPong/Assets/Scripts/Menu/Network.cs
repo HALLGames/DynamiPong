@@ -109,7 +109,7 @@ public class Network : MonoBehaviour
     }
 
     // Puts name in dictionary with clientId as the key
-    public void addConnectedPlayer(ulong clientId, string name)
+    private void addConnectedPlayer(ulong clientId, string name)
     {
         // If name is empty, call them "PlayerX", where X is the player count
         if (name == "")
@@ -136,6 +136,10 @@ public class Network : MonoBehaviour
         if (connectedPlayerNames.ContainsKey(clientId))
         {
             connectedPlayerNames.Remove(clientId);
+        }
+        if (connectedPlayerScores.ContainsKey(clientId))
+        {
+            connectedPlayerScores.Remove(clientId);
         }
     }
 

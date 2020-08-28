@@ -91,7 +91,7 @@ public class LobbyManager : NetworkedBehaviour
             InvokeClientRpcOnEveryoneExcept(OnDisconnectButton, OwnerClientId);
             canvas.disableUI();
             Destroy(gameInfo.gameObject);
-            StartCoroutine(DisconnectHost());
+            StartCoroutine(DisconnectWithDelay());
         } 
         else
         {
@@ -154,7 +154,31 @@ public class LobbyManager : NetworkedBehaviour
         canvas.botButton.interactable = connected < 2; // Bot button disabled if there are two or more players
     }
 
-    private IEnumerator DisconnectHost()
+    // A client wants to play with bot
+    [ServerRPC(RequireOwnership = false)]
+    public void StartBotModeOnServer()
+    {
+        // Add bot flag to game info
+        gameInfo.useBot = true;
+
+        startGame();
+    }
+
+    // Server-Side, notifies clients and queues scene switch
+    private void startGame()
+    {
+        int delay = 5;
+        InvokeClientRpcOnEveryone(StartCountdownOnClient, delay);
+        Invoke("SwitchScene", delay);
+
+        gameInfo.winCon = (GameInfo.WinCondition)canvas.winConDropdown.value;
+    }
+
+    //--------------------------------------------
+    // Disconnecting
+    //--------------------------------------------
+
+    private IEnumerator DisconnectWithDelay()
     {
         yield return new WaitForSeconds(0.5f);
 
@@ -176,24 +200,12 @@ public class LobbyManager : NetworkedBehaviour
         SceneManager.LoadScene("Connection");
     }
 
-    // A client wants to play with bot
-    [ServerRPC(RequireOwnership = false)]
-    public void StartBotModeOnServer()
+    private void OnApplicationQuit()
     {
-        // Add bot flag to game info
-        gameInfo.useBot = true;
-
-        startGame();
-    }
-
-    // Server-Side, notifies clients and queues scene switch
-    private void startGame()
-    {
-        int delay = 5;
-        InvokeClientRpcOnEveryone(StartCountdownOnClient, delay);
-        Invoke("SwitchScene", delay);
-
-        gameInfo.winCon = (GameInfo.WinCondition)canvas.winConDropdown.value;
+        if (IsServer)
+        {
+            InvokeClientRpcOnEveryone(OnDisconnectButton);
+        }
     }
 
     //--------------------------------------------
