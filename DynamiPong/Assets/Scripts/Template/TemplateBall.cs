@@ -29,11 +29,6 @@ public class TemplateBall : BallBehaviour
         base.ballMovement();
     }
 
-    protected override void initSound()
-    {
-        base.initSound();
-    }
-
     // Custom collision logic
     protected override void OnCollisionEnter2D(Collision2D collision)
     {

@@ -77,7 +77,7 @@ public class PaddleBehaviour : NetworkedBehaviour
         // Find Ball
         if (botBall == null)
         {
-            botBall = GameObject.FindObjectOfType<BallBehaviour>();
+            botBall = FindObjectOfType<BallBehaviour>();
         }
 
         // Movement
@@ -88,6 +88,10 @@ public class PaddleBehaviour : NetworkedBehaviour
 
             // Normal movement
             body.velocity = new Vector2(0, ballY - paddleY) * speed;
+        } 
+        else
+        {
+            body.velocity = Vector2.zero;
         }
 
         // Sync

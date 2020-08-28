@@ -11,8 +11,12 @@ public class MainMenuManager : MonoBehaviour
 
     private void Awake()
     {
-        if(Application.isBatchMode)
+        if(Application.isBatchMode ||  Network.GetArgumentIndex("-server") != -1)
         {
+            // Disable sound
+            AudioListener.volume = 0f;
+
+            // Load connection
             SceneManager.LoadScene("Connection");
         }
     }

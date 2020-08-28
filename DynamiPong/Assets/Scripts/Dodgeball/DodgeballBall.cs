@@ -55,7 +55,7 @@ public class DodgeballBall : BallBehaviour
         base.OnCollisionEnter2D(collision);
         if (collision.transform.tag == "Goal")
         {
-            wallHit.Play();
+            manager.PlaySound("Wall");
         }
     }
 

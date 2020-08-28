@@ -6,7 +6,7 @@ using MLAPI.Messaging;
 
 public class PowerupPongBall : BallBehaviour
 {
-    protected new SpriteRenderer renderer;
+    protected SpriteRenderer spriteRenderer;
     protected TrailRenderer trail;
     private float baseSpeed;
 
@@ -18,10 +18,10 @@ public class PowerupPongBall : BallBehaviour
     {
         base.Start();
 
-        renderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         trail = GetComponent<TrailRenderer>();
 
-        renderer.color = Color.white;
+        spriteRenderer.color = Color.white;
         lastTouchedPaddle = null;
         baseSpeed = speed;
     }
@@ -30,11 +30,6 @@ public class PowerupPongBall : BallBehaviour
     new void Update()
     {
         base.Update();
-    }
-
-    protected override void initSound()
-    {
-        base.initSound();
     }
 
     // Custom ball movement
@@ -68,10 +63,10 @@ public class PowerupPongBall : BallBehaviour
             if (collision.transform.tag == "Paddle")
             {
                 // Transform into the color of the last touched paddle
-                renderer.color = collision.transform.GetComponent<SpriteRenderer>().color;
+                spriteRenderer.color = collision.transform.GetComponent<SpriteRenderer>().color;
                 lastTouchedPaddle = collision.transform.GetComponent<PowerupPongPaddle>();
 
-                InvokeClientRpcOnEveryone(UpdateColorOnClients, renderer.color);
+                InvokeClientRpcOnEveryone(UpdateColorOnClients, spriteRenderer.color);
             }
         }
     }
@@ -79,7 +74,7 @@ public class PowerupPongBall : BallBehaviour
     [ClientRPC]
     public void UpdateColorOnClients(Color color)
     {
-        renderer.color = color;
+        spriteRenderer.color = color;
     }
 
     public IEnumerator ChangeSpeed(float modifier, int duration)

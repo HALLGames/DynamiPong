@@ -25,7 +25,7 @@ public class LobbyManager : NetworkedBehaviour
         // init vars
         readyPlayers = new List<ulong>();
 
-        // Find the canvas. Initialize because it gets updated before Start().
+        // Find the canvas.
         canvas = FindObjectOfType<LobbyCanvas>();
         canvas.initialize();
 
@@ -86,16 +86,16 @@ public class LobbyManager : NetworkedBehaviour
     [ClientRPC]
     public void OnDisconnectButton()
     {
-        if (IsHost)
+        if (IsServer)
         {
             InvokeClientRpcOnEveryoneExcept(OnDisconnectButton, OwnerClientId);
             canvas.disableUI();
             Destroy(gameInfo.gameObject);
-            StartCoroutine(disconnectHost());
+            StartCoroutine(DisconnectHost());
         } 
         else
         {
-            disconnect();
+            DisconnectOnClient();
         }
     }
 
@@ -154,15 +154,21 @@ public class LobbyManager : NetworkedBehaviour
         canvas.botButton.interactable = connected < 2; // Bot button disabled if there are two or more players
     }
 
-    private IEnumerator disconnectHost()
+    private IEnumerator DisconnectHost()
     {
         yield return new WaitForSeconds(0.5f);
 
-        disconnect();
+        DisconnectOnClient();
     }
 
-    private void disconnect()
+    private void DisconnectOnClient()
     {
+        // Disconnect from network
+        if (NetworkingManager.Singleton.IsConnectedClient)
+        {
+            NetworkingManager.Singleton.StopClient();
+        }
+
         // Destroy old network
         Destroy(GameObject.FindGameObjectWithTag("Network"));
 

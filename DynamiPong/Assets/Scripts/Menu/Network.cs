@@ -10,6 +10,7 @@ using System.Net;
 public class Network : MonoBehaviour
 {
     public enum NetworkType { None, Client, Server, Host }
+    public enum ConnectionType { Server, LocalNetwork, Localhost, Custom}
 
     public Dictionary<ulong, int> connectedPlayerScores;
     private Dictionary<ulong, string> connectedPlayerNames;
@@ -17,7 +18,9 @@ public class Network : MonoBehaviour
     public string localhostAddress { get => "127.0.0.1"; }
     public string localNetworkAddress { get => getLocalNetworkAddress(); }
     public string serverAddress { get => "192.168.42.17"; } 
-    public int defaultPort { get => 7777; } 
+    public int defaultPort { get => 7777; }
+
+    public bool debugServer;
 
     // Start is called before the first frame update
     void Start()
@@ -25,9 +28,9 @@ public class Network : MonoBehaviour
         connectedPlayerNames = new Dictionary<ulong, string>();
         connectedPlayerScores = new Dictionary<ulong, int>();
 
-        if (Application.isBatchMode)
+        if (Application.isBatchMode || GetArgumentIndex("-server") != -1 || (Application.isEditor && debugServer))
         {
-            // Launch server if headless
+            // Launch server if headless, given arg, or server mode flagged (editor only)
             connect(getServerAddress(), getPort(), NetworkType.Server);
         }
     }
@@ -53,7 +56,7 @@ public class Network : MonoBehaviour
         switch(networkType)
         {
             case NetworkType.Client:
-                startHost();
+                startClient();
                 break;
             case NetworkType.Server:
                 startServer();
@@ -71,17 +74,23 @@ public class Network : MonoBehaviour
 
     public void startServer()
     {
-        NetworkingManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+        addCallbacks();
         NetworkingManager.Singleton.StartServer();
     }
 
     public void startHost()
     {
-        NetworkingManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+        addCallbacks();
         NetworkingManager.Singleton.StartHost();
 
         // Check Approval manually because host mode doesn't do it
         ApprovalCheck(NetworkingManager.Singleton.NetworkConfig.ConnectionData, NetworkingManager.Singleton.LocalClientId, null);
+    }
+
+    private void addCallbacks()
+    {
+        NetworkingManager.Singleton.ConnectionApprovalCallback += ApprovalCheck;
+        NetworkingManager.Singleton.OnClientDisconnectCallback += ClientDisconnectCallback;
     }
 
     // Gets approval and puts name into the list
@@ -120,6 +129,14 @@ public class Network : MonoBehaviour
         // Add to dictionaries
         connectedPlayerNames.Add(clientId, newName);
         connectedPlayerScores.Add(clientId, 0);
+    }
+
+    private void ClientDisconnectCallback(ulong clientId)
+    {
+        if (connectedPlayerNames.ContainsKey(clientId))
+        {
+            connectedPlayerNames.Remove(clientId);
+        }
     }
 
     /// <summary>
@@ -164,6 +181,18 @@ public class Network : MonoBehaviour
         string addressString = GetArgumentValue("-address");
         if (addressString != null)
         {
+            if (addressString == "server")
+            {
+                return serverAddress;
+            }
+            else if (addressString == "localNetwork")
+            {
+                return localNetworkAddress;
+            } 
+            else if (addressString == "localhost")
+            {
+                return localhostAddress;
+            }
             return addressString;
         }
         return serverAddress;
@@ -269,13 +298,29 @@ public class Network : MonoBehaviour
     public static string GetArgumentValue(string argument)
     {
         string[] args = Environment.GetCommandLineArgs();
-        for (int i = 0; i < args.Length; i++)
+        int argIndex = GetArgumentIndex(argument);
+        if (argIndex >= 0 && args.Length > argIndex + 1)
         {
-            if (args[i] == argument && args.Length > i + 1)
-            {
-                return args[i + 1];
-            }
+            return args[argIndex + 1];
         }
         return null;
+    }
+
+    /// <summary>
+    /// Gets the index of the given command line argument
+    /// </summary>
+    /// <param name="argument">The name of the argument</param>
+    /// <returns>The index of the argument. Returns -1 if not found.</returns>
+    public static int GetArgumentIndex(string argument)
+    {
+        string[] args = Environment.GetCommandLineArgs();
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i] == argument)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 }

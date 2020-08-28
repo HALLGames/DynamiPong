@@ -9,14 +9,15 @@ public class BallBehaviour : NetworkedBehaviour
     public float speed = 5.0f;
 
     protected Rigidbody2D body;
-
-    protected AudioSource wallHit;
-    protected AudioSource paddleHit;
+    protected GameManagerBehaviour manager;
 
     public override void NetworkStart()
     {
-        // Get body
+        // Get refs
         body = GetComponent<Rigidbody2D>();
+        manager = FindObjectOfType<GameManagerBehaviour>();
+
+        launchBall();
     }
 
     /// <summary>
@@ -25,25 +26,7 @@ public class BallBehaviour : NetworkedBehaviour
     /// </summary>
     protected void Start()
     {
-        // Get body
-        body = GetComponent<Rigidbody2D>();
-
-        initSound();
-
-        launchBall();
-    }
-
-    /// <summary>
-    /// Override this method to customize what sounds are played
-    /// </summary>
-    protected virtual void initSound()
-    {
-        // initializes the wall hit and paddle hit sound effects
-        wallHit = gameObject.AddComponent<AudioSource>();
-        wallHit.clip = Resources.Load<AudioClip>("Sound/Common/WallHit");
-
-        paddleHit = gameObject.AddComponent<AudioSource>();
-        paddleHit.clip = Resources.Load<AudioClip>("Sound/Common/PaddleHit");
+        
     }
 
     /// <summary>
@@ -67,7 +50,7 @@ public class BallBehaviour : NetworkedBehaviour
     protected virtual void launchBall()
     {
         // Launch in pseudo-random direction
-        body.velocity = BallBehaviour.randomNormalizedVelocity() * speed;
+        body.velocity = randomNormalizedVelocity() * speed;
     }
 
     /// <summary>
@@ -91,8 +74,9 @@ public class BallBehaviour : NetworkedBehaviour
     /// <param name="collision"></param>
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
+        string tag = collision.transform.tag;
 
-        if (collision.transform.tag == "Paddle")
+        if (tag == "Paddle")
         {
             float help = collision.transform.GetComponent<Rigidbody2D>().velocity.y;
             if (help > 0)
@@ -102,16 +86,9 @@ public class BallBehaviour : NetworkedBehaviour
             {
                 body.velocity = new Vector2(body.velocity.x, body.velocity.y - 0.5f);
             }
-            if (paddleHit.enabled)
-            {
-                paddleHit.Play();
-            }
         }
-
-        if (collision.transform.tag == "Wall")
+        else if (tag == "Wall")
         {
-            wallHit.Play();
-
             // Prevent sticking to the wall
             if (transform.position.y >= 0 && Mathf.Abs(body.velocity.y) <= 1.5f)
             {
@@ -124,6 +101,8 @@ public class BallBehaviour : NetworkedBehaviour
                 body.velocity = new Vector2(body.velocity.x, 1.5f);
             }
         }
+
+        manager.PlaySound(tag);
     }
 
     // Returns a pseudo-random Vector2 with a magnitude of 1
