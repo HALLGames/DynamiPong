@@ -14,25 +14,26 @@ OutFile "DynamiPong-0.1.exe"
 ; The default installation directory
 InstallDir $PROGRAMFILES\DynamiPong
 
-; -------------------------------
-
 ; Modern UI
-
 !include "MUI2.nsh"
 
-!insertmacro MUI_PAGE_DIRECTORY
-!insertmacro MUI_PAGE_INSTFILES
-!insertmacro MUI_LANGUAGE "English"
+; Icons
+!define MUI_ICON icon.ico
+!define MUI_UNICON unicon.ico
 
-;--------------------------------
+; -------------------------------
 
 ; Pages
 
-; Page directory
-; Page instfiles
+; Installer
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
 
-UninstPage uninstConfirm
-UninstPage instfiles
+; Uninstaller
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+
+!insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
 
@@ -46,8 +47,11 @@ Section "Install"
   ; Put file there
   File /r ..\DynamiPong\bin\*
   
-  ; Create shortcut
+  ; Create desktop shortcut
   CreateShortcut "$DESKTOP\DynamiPong.lnk" "$INSTDIR\DynamiPong.exe"
+  
+  ; Create server shortcut
+  CreateShortcut "$INSTDIR\DynamiPongServer.lnk" "$INSTDIR\DynamiPong.exe" "-batchmode -address localNetwork"
   
   ; create the uninstaller
   WriteUninstaller "$INSTDIR\uninstall.exe"
@@ -60,7 +64,7 @@ SectionEnd
 
 Section "Uninstall"
  
-  ; Delete shortcut
+  ; Delete desktop shortcut
   Delete "$DESKTOP\DynamiPong.lnk"
 
   ; Delete the directory recursively
