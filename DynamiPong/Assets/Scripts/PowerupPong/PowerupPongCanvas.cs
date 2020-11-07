@@ -22,8 +22,8 @@ public class PowerupPongCanvas : LevelCanvasBehaviour
         clearPowerupImage(false);
 
         // Assign score colors
-        leftScoreText.color = Color.green;
-        rightScoreText.color = Color.red;
+        playerScores.leftPlayerScore.color = Color.green;
+        playerScores.rightPlayerScore.color = Color.red;
     }
 
     public void clearPowerupImage(bool onLeft)

@@ -46,12 +46,13 @@ Section "Install"
   
   ; Put file there
   File /r ..\DynamiPong\bin\*
+  File .\readme.txt
   
   ; Create desktop shortcut
   CreateShortcut "$DESKTOP\DynamiPong.lnk" "$INSTDIR\DynamiPong.exe"
   
   ; Create server shortcut
-  CreateShortcut "$INSTDIR\DynamiPongServer.lnk" "$INSTDIR\DynamiPong.exe" "-batchmode -address localNetwork"
+  CreateShortcut "$INSTDIR\DynamiPongLANServer.lnk" "$INSTDIR\DynamiPong.exe" "-batchmode -address localNetwork"
   
   ; create the uninstaller
   WriteUninstaller "$INSTDIR\uninstall.exe"

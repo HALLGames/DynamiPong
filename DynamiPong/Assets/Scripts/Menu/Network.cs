@@ -10,7 +10,7 @@ using System.Net;
 public class Network : MonoBehaviour
 {
     public enum NetworkType { None, Client, Server, Host }
-    public enum ConnectionType { Server, LocalNetwork, Localhost, Custom}
+    public enum ConnectionType { /*Server,*/ LocalNetwork, Localhost, Custom}
 
     public Dictionary<ulong, int> connectedPlayerScores;
     private Dictionary<ulong, string> connectedPlayerNames;

@@ -30,7 +30,7 @@ public class LobbyManager : NetworkedBehaviour
         canvas.initialize();
 
         // UI
-        canvas.updateConnectedPanel(readyPlayers);
+        canvas.updatePlayerBarsOnServer(readyPlayers);
         canvas.initHostPanel(IsHost);
 
         // Destroy main menu music
@@ -99,6 +99,28 @@ public class LobbyManager : NetworkedBehaviour
         }
     }
 
+    public void OnLevelLeftButton()
+    {
+        int numLevels = canvas.levelDropdown.options.Count;
+        int newValue = canvas.levelDropdown.value - 1;
+        if (newValue < 0)
+        {
+            newValue = numLevels - 1;
+        }
+        canvas.levelDropdown.value = newValue;
+    }
+
+    public void OnLevelRightButton()
+    {
+        int numLevels = canvas.levelDropdown.options.Count;
+        int newValue = canvas.levelDropdown.value + 1;
+        if (newValue >= numLevels)
+        {
+            newValue = 0;
+        }
+        canvas.levelDropdown.value = newValue;
+    }
+
     //--------------------------------------------
     // Connected and Ready
     //--------------------------------------------
@@ -140,18 +162,36 @@ public class LobbyManager : NetworkedBehaviour
     private void TellClientsToUpdateUI()
     {
         InvokeClientRpcOnEveryone(SetDropdownValueOnClient, canvas.levelDropdown.value, canvas.winConDropdown.value);
-        canvas.updateConnectedPanel(readyPlayers);
-        InvokeClientRpcOnEveryone(UpdateConnectedOnClient, connected, canvas.playersText.text);
+        canvas.updatePlayerBarsOnServer(readyPlayers);
+        InvokeClientRpcOnEveryone(UpdateConnectedOnClient, connected);
+        InvokeClientRpcOnEveryone(UpdatePlayerNamesOnClient, canvas.playerBars.getLeftPlayerName(), canvas.playerBars.getRightPlayerName());
+        InvokeClientRpcOnEveryone(UpdatePlayerScoresOnClient, canvas.playerBars.getLeftPlayerScore(), canvas.playerBars.getRightPlayerScore());
+        InvokeClientRpcOnEveryone(UpdatePlayerReadyOnClient, canvas.playerBars.getLeftPlayerReady(), canvas.playerBars.getRightPlayerReady());
     }
 
     [ClientRPC]
-    public void UpdateConnectedOnClient(int connected, string text)
+    public void UpdateConnectedOnClient(int connected)
     {
         this.connected = connected;
-
-        // UI
-        canvas.updateConnectedPanel(text);
         canvas.botButton.interactable = connected < 2; // Bot button disabled if there are two or more players
+    }
+
+    [ClientRPC]
+    public void UpdatePlayerNamesOnClient(string leftPlayerName, string rightPlayerName)
+    {
+        canvas.playerBars.setPlayerNames(leftPlayerName, rightPlayerName);
+    }
+
+    [ClientRPC]
+    public void UpdatePlayerScoresOnClient(string leftPlayerScore, string rightPlayerScore)
+    {
+        canvas.playerBars.setPlayerScores(leftPlayerScore, rightPlayerScore);
+    }
+
+    [ClientRPC]
+    public void UpdatePlayerReadyOnClient(bool leftPlayerReady, bool rightPlayerReady)
+    {
+        canvas.playerBars.setReady(leftPlayerReady, rightPlayerReady);
     }
 
     // A client wants to play with bot
