@@ -1,13 +1,17 @@
 ![DynamiPong](https://github.com/HALLGames/DynamiPong/blob/master/Images/Title.png)
 DynamiPong is a take on the classic video game [Pong](https://en.wikipedia.org/wiki/Pong), using the Unity engine. Play on a variety or gamemodes against a bot or against your friends.
 
+[**Download**](https://github.com/HALLGames/DynamiPong/blob/master/Installer/DynamiPong-0.1.exe)
+
+## Screenshots
+
 ![Bots](https://github.com/HALLGames/DynamiPong/blob/master/Images/BotExample.png)
 *Play against bots for a singleplayer experience.*
 
-![Multiplayer](https://github.com/HALLGames/DynamiPong/blob/master/Images/MultiplayerGamemodes1.png)
+![Multiplayer](https://github.com/HALLGames/DynamiPong/blob/master/Images/MultiplayerGamemodes1.PNG)
 *Duel your friends.*
 
-![Gamemodes](https://github.com/HALLGames/DynamiPong/blob/master/Images/MultiplayerGamemodes2.png)
+![Gamemodes](https://github.com/HALLGames/DynamiPong/blob/master/Images/MultiplayerGamemodes2.PNG)
 *Explore alternate gamemodes.*
 
 ## Development Environment
