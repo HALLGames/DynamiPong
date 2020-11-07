@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GameInfo : MonoBehaviour
 {
-    public enum WinCondition {Freeplay, FirstTo10, FirstTo20, MostAfter5, MostAfter10}
+    public enum WinCondition {FirstTo10, FirstTo20, MostAfter5, MostAfter10, Freeplay}
 
     public bool useBot = false;
-    public WinCondition winCon = WinCondition.Freeplay;
+    public WinCondition winCon = WinCondition.FirstTo10;
 }

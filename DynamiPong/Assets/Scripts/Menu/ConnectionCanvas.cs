@@ -99,14 +99,14 @@ public class ConnectionCanvas : MonoBehaviour
         // Change UI based on selected connection
         switch (addressDropdown.value)
         {
-            case (int)Network.ConnectionType.Server:
+            /* case (int)Network.ConnectionType.Server:
                 addressField.text = network.serverAddress;
                 addressField.interactable = false;
                 portDropdown.gameObject.SetActive(true);
                 portField.interactable = false;
                 OnPortDropdownChanged();
                 hostToggle.interactable = false;
-                break;
+                break; */
             case (int)Network.ConnectionType.LocalNetwork:
                 addressField.text = network.localNetworkAddress;
                 addressField.interactable = false;

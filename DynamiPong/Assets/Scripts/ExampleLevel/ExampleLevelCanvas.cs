@@ -8,7 +8,7 @@ public class ExampleLevelCanvas : LevelCanvasBehaviour
     new void Start()
     {
         // Assign colors
-        leftScoreText.color = Color.green;
-        rightScoreText.color = Color.red;
+        playerScores.leftPlayerScore.color = Color.green;
+        playerScores.rightPlayerScore.color = Color.red;
     }
 }

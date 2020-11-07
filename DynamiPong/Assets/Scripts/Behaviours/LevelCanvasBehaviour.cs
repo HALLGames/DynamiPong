@@ -6,8 +6,7 @@ using UnityEngine.UI;
 public class LevelCanvasBehaviour : MonoBehaviour
 {
     // UI
-    public Text leftScoreText;
-    public Text rightScoreText;
+    public PlayerScoreBars playerScores;
     public Text winConText;
     public Button concedeButton;
     public GameTimer timer;

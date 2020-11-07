@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public class LobbyCanvas : MonoBehaviour
 {
     // UI
-    public Text playersText;
+    public LobbyPlayerBars playerBars;
     public Dropdown levelDropdown;
     public Dropdown winConDropdown;
     public Image levelPreview;
@@ -29,7 +29,7 @@ public class LobbyCanvas : MonoBehaviour
     {
         network = GameObject.FindGameObjectWithTag("Network").GetComponent<Network>();
 
-        playersText.text = "";
+        playerBars.clear();
         countdownPanel.gameObject.SetActive(false);
         countdownText.text = string.Empty;
 
@@ -82,16 +82,19 @@ public class LobbyCanvas : MonoBehaviour
     /// Players who are ready will have "(Ready)" appear after their name.
     /// </summary>
     /// <param name="readyList"></param>
-    public void updateConnectedPanel(List<ulong> readyList)
+    public void updatePlayerBarsOnServer(List<ulong> readyList)
     {
-        // Reset Text
-        playersText.text = "";
+        playerBars.clear();
+        int playerNum = 0;
 
         // Add all client names
         foreach (NetworkedClient client in NetworkingManager.Singleton.ConnectedClientsList)
         {
-            ulong id = client.ClientId;
             string name;
+            int playerScore;
+            bool ready;
+            ulong id = client.ClientId;
+
             if (network.getConnectedPlayerNames().ContainsKey(id))
             {
                 name = network.getConnectedPlayerNames()[id];
@@ -100,23 +103,21 @@ public class LobbyCanvas : MonoBehaviour
             {
                 name = "Unknown";
             }
-            
-            if (readyList.Contains(id))
+
+            if (network.connectedPlayerScores.ContainsKey(id))
             {
-                name += " (Ready)";
+                playerScore = network.connectedPlayerScores[id];
+            } else
+            {
+                playerScore = 0;
             }
 
-            playersText.text += name + "\n";
-        } 
-    }
+            ready = readyList.Contains(id);
 
-    /// <summary>
-    /// Sets the connected panel text to input Text
-    /// </summary>
-    /// <param name="text">Text to be displayed in the connected panel</param>
-    public void updateConnectedPanel(string text)
-    {
-        playersText.text = text;
+            playerBars.addPlayer(name, playerScore.ToString(), ready, playerNum);
+
+            playerNum++;
+        }
     }
 
     public void startCountdown(int delay)

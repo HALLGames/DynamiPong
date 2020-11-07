@@ -18,19 +18,19 @@ public class VictoryPanel : MonoBehaviour
     public void setupVictory()
     {
         title.text = "Victory!";
-        message.text = "Great job, you won!" + "\nClick continue to return to lobby.";
+        message.text = "Great job!" + "\nClick continue to return to lobby.";
     }
 
     public void setupLoss()
     {
         title.text = "Loss!";
-        message.text = "You lost. Better luck next time." + "\nClick continue to return to lobby.";
+        message.text = "Better luck next time." + "\nClick continue to return to lobby.";
     }
 
     public void setupTie()
     {
         title.text = "Tie!";
-        message.text = "Its a tie. You know what they say: Great Minds Play Alike!" + "\nClick continue to return to lobby.";
+        message.text = "I guess great minds play alike!" + "\nClick continue to return to lobby.";
     }
 
     public void disableContinueButton()

@@ -111,9 +111,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
             // Init scores
             leftScore = 0;
             rightScore = 0;
-
-            // Update Text
-            InvokeClientRpcOnEveryone(UpdateScoreText, leftScore, rightScore);
+            InvokeClientRpcOnEveryone(InitPlayerScores);
         }
     }
 
@@ -174,6 +172,12 @@ public class GameManagerBehaviour : NetworkedBehaviour
     public void InitWinConOnClient(GameInfo.WinCondition winCon)
     {
         canvas.initWinConText(winCon);
+    }
+
+    [ClientRPC]
+    public void InitPlayerScores()
+    {
+        canvas.playerScores.initialize(leftName, rightName);
     }
 
     //-----------------------------------------------
@@ -308,8 +312,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
     [ClientRPC]
     public virtual void UpdateScoreText(int leftScore, int rightScore)
     {
-        canvas.leftScoreText.text = leftName + ": " + leftScore.ToString();
-        canvas.rightScoreText.text = rightName + ": " + rightScore.ToString();
+        canvas.playerScores.updateScore(leftScore, rightScore);
     }
 
     /// <summary>
