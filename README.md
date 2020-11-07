@@ -1,13 +1,14 @@
-# DynamiPong
-Multiplayer Pong, with some twists...
+![DynamiPong](https://github.com/HALLGames/DynamiPong/blob/master/Images/Title.png)
+DynamiPong is a take on the classic video game [Pong](https://en.wikipedia.org/wiki/Pong), using the Unity engine. Play on a variety or gamemodes against a bot or against your friends.
 
-##
-- [Level Ideas](https://github.com/HALLGames/DynamiPong/blob/master/LevelIdeas.md)
+![Bots](https://github.com/HALLGames/DynamiPong/blob/master/Images/BotExample.png)
+*Play against bots for a singleplayer experience.*
 
-## Documentation
-- [Best Practices](http://www.glenstevens.ca/unity3d-best-practices/)
+![Multiplayer](https://github.com/HALLGames/DynamiPong/blob/master/Images/MultiplayerGamemodes1.png)
+*Duel your friends.*
 
-TBD
+![Gamemodes](https://github.com/HALLGames/DynamiPong/blob/master/Images/MultiplayerGamemodes2.png)
+*Explore alternate gamemodes.*
 
 ## Development Environment
 
@@ -87,3 +88,7 @@ Open Unity Hub, click "Add", then select the folder "DynamiPong/DynamiPong".
 - When you copy prefabs with NetworkObjects, remember to change the Prefab Hash Generator, otherwise MLAPI gets mad.
 - One of the most important methods to override is getPrefabs() in the GameManager, since it specifies which prefabs are used. 
   - This is already done in the Template, but you still need to rename the classes and strings.
+  
+
+## "Planned" Features (no guarantees)
+- [Level Ideas](https://github.com/HALLGames/DynamiPong/blob/master/LevelIdeas.md)
