@@ -63,6 +63,8 @@ crashlytics-build.properties
 MLAPI-Installer.unitypackage.meta
 MLAPI.unitypackage.meta
 
+# Installer
+Installer/*.exe
 
 # --- Windows gitignores
 #

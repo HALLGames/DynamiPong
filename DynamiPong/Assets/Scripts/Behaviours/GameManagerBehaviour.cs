@@ -123,7 +123,7 @@ public class GameManagerBehaviour : NetworkedBehaviour
         // Init Background Music
         GameObject backgroundMusicObject = new GameObject("BackgroundMusic");
         AudioSource backgroundMusic = backgroundMusicObject.AddComponent<AudioSource>();
-        backgroundMusic.clip = Resources.Load<AudioClip>("Sound/Music/BackgroundMusic");
+        backgroundMusic.clip = Resources.Load<AudioClip>("Sound/Music/BGM1");
         backgroundMusic.loop = true;
         backgroundMusic.Play();
     }
