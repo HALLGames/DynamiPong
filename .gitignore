@@ -63,9 +63,6 @@ crashlytics-build.properties
 MLAPI-Installer.unitypackage.meta
 MLAPI.unitypackage.meta
 
-# Installer
-Installer/*.exe
-
 # --- Windows gitignores
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Global/Windows.gitignore
